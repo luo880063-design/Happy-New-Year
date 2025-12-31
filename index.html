@@ -1,550 +1,172 @@
 <!doctype html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
-  <meta name="theme-color" content="#000000" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
+<meta name="theme-color" content="#000" />
 
-  <!-- 在线花体（iPhone 必定生效）
-       Great Vibes: 英文花体
-       Ma Shan Zheng: 清晰手写中文（第三段用）
-       Zhi Mang Xing: 备用中文花体（保留为 fallback）
-  -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Ma+Shan+Zheng&family=Zhi+Mang+Xing&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
 
-  <title>Happy New Year — To 小瑶</title>
+<title>Happy New Year — To 小瑶</title>
 
-  <style>
-    :root{
-      --safe-top: env(safe-area-inset-top);
-      --safe-bottom: env(safe-area-inset-bottom);
-      --safe-left: env(safe-area-inset-left);
-      --safe-right: env(safe-area-inset-right);
-    }
+<style>
+html,body{
+  margin:0;
+  height:100%;
+  background:#000;
+  overflow:hidden;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei";
+}
 
-    html,body{
-      margin:0;
-      height:100%;
-      overflow:hidden;
-      background:#000;
-      -webkit-font-smoothing: antialiased;
-      text-rendering: geometricPrecision;
-      touch-action: manipulation;
-      font-family: system-ui,-apple-system,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;
-    }
+canvas{
+  position:fixed;
+  inset:0;
+}
 
-    canvas#fx{
-      position:fixed;
-      inset:0;
-      width:100vw;
-      height:100vh;
-      display:block;
-      background:
-        radial-gradient(1400px 900px at 50% 72%, rgba(44,30,86,.42), rgba(0,0,0,1) 62%),
-        radial-gradient(900px 600px at 18% 28%, rgba(255,80,180,.12), transparent 60%),
-        radial-gradient(900px 600px at 82% 32%, rgba(120,220,255,.11), transparent 60%),
-        radial-gradient(900px 600px at 50% 95%, rgba(255,210,90,.10), transparent 60%);
-    }
+.overlay{
+  position:fixed;
+  inset:0;
+  display:grid;
+  place-items:center;
+  pointer-events:none;
+}
 
-    .vignette{
-      pointer-events:none;
-      position:fixed;
-      inset:0;
-      mix-blend-mode:screen;
-      background:
-        radial-gradient(1200px 900px at 50% 55%, rgba(255,255,255,.06), rgba(0,0,0,.82) 74%),
-        radial-gradient(900px 600px at 15% 32%, rgba(255,60,180,.11), transparent 62%),
-        radial-gradient(900px 600px at 85% 35%, rgba(60,220,255,.11), transparent 62%),
-        radial-gradient(900px 600px at 50% 92%, rgba(255,210,90,.08), transparent 60%);
-    }
+.card{
+  padding:18px 14px;
+  border-radius:24px;
+  background:rgba(0,0,0,.04);
+  backdrop-filter:blur(6px) saturate(170%);
+  box-shadow:0 20px 60px rgba(0,0,0,.35);
+  text-align:center;
+}
 
-    .halo{
-      pointer-events:none;
-      position:fixed;
-      inset:0;
-      z-index:8;
-      mix-blend-mode:screen;
-      opacity:.82;
-      background: radial-gradient(
-        900px 680px at 50% 55%,
-        rgba(255,120,220,.10),
-        rgba(120,220,255,.07) 40%,
-        rgba(0,0,0,0) 76%
-      );
-      animation: haloBreath 6.4s ease-in-out infinite;
-    }
-    @keyframes haloBreath{0%,100%{opacity:.62;}50%{opacity:1;}}
+.line1,.line2{
+  font-family:"Great Vibes",cursive;
+  color:#fff;
+  -webkit-text-stroke:.4px rgba(0,0,0,.3);
+  text-shadow:0 4px 18px rgba(0,0,0,.6);
+}
 
-    .overlay{
-      position:fixed;
-      inset:0;
-      z-index:20;
-      padding:
-        calc(6vh + var(--safe-top))
-        calc(6vw + var(--safe-right))
-        calc(6vh + var(--safe-bottom))
-        calc(6vw + var(--safe-left));
-      display:grid;
-      place-items:center;
-      pointer-events:none;
-      text-align:center;
-    }
+.line1{font-size:clamp(36px,8vw,80px);}
+.line2{font-size:clamp(18px,5vw,38px);margin-bottom:8px;}
 
-    /* 更透：烟花更穿透 */
-    .card{
-      max-width:min(1120px,94vw);
-      width:100%;
-      padding:20px 14px;
-      border-radius:26px;
-
-      background:
-        radial-gradient(900px 420px at 50% 18%, rgba(255,255,255,.06), rgba(0,0,0,0) 62%),
-        rgba(0,0,0,.042);
-
-      backdrop-filter: blur(6px) saturate(170%);
-      -webkit-backdrop-filter: blur(6px) saturate(170%);
-
-      box-shadow:
-        0 18px 60px rgba(0,0,0,.34),
-        0 0 58px rgba(255,120,220,.09),
-        0 0 58px rgba(120,220,255,.08),
-        inset 0 0 0 1px rgba(255,255,255,.13);
-
-      opacity:0;
-      transform: translateY(10px) scale(.994);
-      transition: opacity 900ms ease, transform 900ms ease;
-    }
-    .card.show{opacity:1; transform: translateY(0) scale(1);}
-
-    /* 标题通用描边/阴影（清晰） */
-    .stroke{
-      -webkit-text-stroke: .42px rgba(0,0,0,.30);
-      text-shadow:
-        0 1px 1px rgba(0,0,0,.35),
-        0 4px 18px rgba(0,0,0,.55);
-      paint-order: stroke fill;
-    }
-
-    .line1{
-      font-family:"Great Vibes", cursive;
-      font-size:clamp(38px, 7.4vw, 88px);
-      margin:0 0 6px;
-      color:#fff;
-      opacity:0;
-      transform: translateY(10px);
-      transition: 760ms ease;
-    }
-
-    .line2{
-      font-family:"Great Vibes", cursive;
-      font-size:clamp(20px, 4.6vw, 44px);
-      margin:0 0 8px;
-      color:#fff;
-      opacity:0;
-      transform: translateY(10px);
-      transition: 760ms ease;
-    }
-
-    /* ✅ 第三段：改为“清晰手写”花体 + 更强收边 */
-    .line3{
-      font-family:"Ma Shan Zheng","Zhi Mang Xing",cursive;
-      font-size:clamp(17px, 4.2vw, 32px);
-      line-height:1.75;
-      letter-spacing:.04em;
-      color:#fff;
-
-      -webkit-text-stroke: .55px rgba(0,0,0,.38);
-      paint-order: stroke fill;
-
-      text-shadow:
-        0 1px 0 rgba(0,0,0,.35),
-        0 3px 10px rgba(0,0,0,.55),
-        0 0 1px rgba(255,255,255,.12);
-
-      opacity:0;
-      transform: translateY(12px);
-      transition: 900ms ease;
-    }
-
-    @media (max-width:480px){
-      .overlay{
-        padding:
-          calc(4.7vh + var(--safe-top))
-          calc(5vw + var(--safe-right))
-          calc(5.3vh + var(--safe-bottom))
-          calc(5vw + var(--safe-left));
-      }
-      .card{
-        padding:18px 12px;
-        background:
-          radial-gradient(900px 420px at 50% 18%, rgba(255,255,255,.055), rgba(0,0,0,0) 62%),
-          rgba(0,0,0,.038);
-        backdrop-filter: blur(5.5px) saturate(175%);
-        -webkit-backdrop-filter: blur(5.5px) saturate(175%);
-      }
-      .line1{ font-size:clamp(34px, 8.1vw, 78px); }
-      .line2{ font-size:clamp(18px, 4.9vw, 38px); }
-      .line3{
-        font-size:clamp(16px, 4.4vw, 30px);
-        line-height:1.78;
-        letter-spacing:.05em;
-      }
-    }
-  </style>
+.line3{
+  font-family:"Ma Shan Zheng",cursive;
+  font-size:clamp(16px,4.5vw,30px);
+  line-height:1.75;
+  letter-spacing:.05em;
+  color:#fff;
+  -webkit-text-stroke:.55px rgba(0,0,0,.38);
+  text-shadow:0 3px 12px rgba(0,0,0,.6);
+}
+</style>
 </head>
 
 <body>
-  <canvas id="fx"></canvas>
-  <div class="halo"></div>
-  <div class="vignette"></div>
+<canvas id="fx"></canvas>
 
-  <div class="overlay">
-    <div class="card" id="card">
-      <div class="line1 stroke" id="l1">Happy New Year</div>
-      <div class="line2 stroke" id="l2">— To 小瑶</div>
-      <div class="line3" id="l3">
-        2025年我做过最正确的决定，就是走进你的生活。谢谢你愿意陪我这个幼稚又笨拙的人。<br>
-        我想把往后的每一个岁末年初都留给你，不仅是第一个，还有以后的每一个。
-      </div>
+<div class="overlay">
+  <div class="card">
+    <div class="line1">Happy New Year</div>
+    <div class="line2">— To 小瑶</div>
+    <div class="line3">
+      2025年我做过最正确的决定，就是走进你的生活。<br>
+      谢谢你愿意陪我这个幼稚又笨拙的人。<br>
+      我想把往后的每一个岁末年初都留给你。
     </div>
   </div>
+</div>
 
-  <script>
-    /* ==========================
-       逼真浪漫烟花（移动端优化）
-       - 自然拖尾：多段渐变 + 抖动
-       - 真实爆炸：外圈+内核+柳絮下垂
-       - 柔和光晕：bloom flash
-       - 节奏更慢：更像真实录像
-    ========================== */
+<script>
+const canvas = document.getElementById("fx");
+const ctx = canvas.getContext("2d");
+let W,H,DPR=Math.min(2,devicePixelRatio||1);
 
-    const canvas = document.getElementById("fx");
-    const ctx = canvas.getContext("2d", { alpha:false, desynchronized:true });
+function resize(){
+  W=innerWidth;H=innerHeight;
+  canvas.width=W*DPR;canvas.height=H*DPR;
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+}
+addEventListener("resize",resize);resize();
 
-    let W=0, H=0;
-    const DPR = Math.min(2, window.devicePixelRatio || 1);
+const rand=(a,b)=>a+Math.random()*(b-a);
+const fireworks=[],particles=[];
 
-    function resize(){
-      W = Math.floor(innerWidth);
-      H = Math.floor(innerHeight);
-      canvas.width  = Math.floor(W * DPR);
-      canvas.height = Math.floor(H * DPR);
-      canvas.style.width = W + "px";
-      canvas.style.height = H + "px";
-      ctx.setTransform(DPR,0,0,DPR,0,0);
+/* ===== 自动烟花（高空绽放） ===== */
+class Firework{
+  constructor(){
+    this.x=rand(W*0.2,W*0.8);
+    this.y=H+30;
+
+    /* 🔥 核心改动：爆炸高度非常高 */
+    this.targetY = rand(H*0.08, H*0.30);
+
+    this.vy=rand(-3.8,-3.0);
+    this.h=rand(0,360);
+    this.trail=[];
+  }
+  update(){
+    this.y+=this.vy;
+    this.trail.push({x:this.x,y:this.y});
+    if(this.trail.length>60) this.trail.shift();
+    if(this.y<=this.targetY){
+      explode(this.x,this.y,this.h);
+      this.dead=true;
     }
-    addEventListener("resize", resize, {passive:true});
-    resize();
+  }
+  draw(){
+    ctx.strokeStyle=`hsla(${this.h},100%,70%,.6)`;
+    ctx.lineWidth=2;
+    ctx.beginPath();
+    this.trail.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));
+    ctx.stroke();
+  }
+}
 
-    const rand = (a,b)=>a+Math.random()*(b-a);
-    const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-    const hsla=(h,s,l,a)=>`hsla(${h},${s}%,${l}%,${a})`;
+function explode(x,y,h){
+  const count=rand(120,160);
+  for(let i=0;i<count;i++){
+    const a=Math.random()*Math.PI*2;
+    const s=rand(1.2,3.5);
+    particles.push({
+      x,y,
+      vx:Math.cos(a)*s,
+      vy:Math.sin(a)*s,
+      life:1,
+      h
+    });
+  }
+}
 
-    // 更慢的整体速度（越小越慢）
-    const SLOW = 0.55;
+function loop(){
+  ctx.fillStyle="rgba(0,0,0,.12)";
+  ctx.fillRect(0,0,W,H);
 
-    // 控制复杂度（移动端更稳）
-    const lowEnd = (navigator.deviceMemory && navigator.deviceMemory <= 3) || (navigator.connection && navigator.connection.saveData);
-    const Q = lowEnd ? 0.85 : 1.0;
+  /* ✅ 自动发射，节奏慢、浪漫 */
+  if(Math.random()<0.018){
+    fireworks.push(new Firework());
+  }
 
-    // 浪漫配色倾向：粉/紫/金/青
-    function romanticHue(){
-      const palettes=[[330,360],[300,330],[40,65],[190,215],[260,290]];
-      const p=palettes[(Math.random()*palettes.length)|0];
-      return (rand(p[0],p[1]))%360;
-    }
+  fireworks.forEach(f=>{f.update();f.draw();});
+  for(let i=fireworks.length-1;i>=0;i--) if(fireworks[i].dead) fireworks.splice(i,1);
 
-    // 轻微背景残影（像镜头曝光）
-    function fadeBg(){
-      ctx.globalCompositeOperation="source-over";
-      ctx.fillStyle="rgba(0,0,0,0.11)";
-      ctx.fillRect(0,0,W,H);
-    }
+  particles.forEach(p=>{
+    p.x+=p.vx;
+    p.y+=p.vy;
+    p.vy+=.03;
+    p.life-=.012;
+    ctx.fillStyle=`hsla(${p.h},100%,70%,${p.life})`;
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,2,0,Math.PI*2);
+    ctx.fill();
+  });
+  for(let i=particles.length-1;i>=0;i--) if(particles[i].life<=0) particles.splice(i,1);
 
-    function bloom(x,y,h){
-      ctx.globalCompositeOperation="lighter";
-      const r = rand(70,140);
-      const g = ctx.createRadialGradient(x,y,0,x,y,r);
-      g.addColorStop(0, hsla(h,90,75,0.30));
-      g.addColorStop(0.45, hsla((h+18)%360,85,68,0.12));
-      g.addColorStop(1, "rgba(0,0,0,0)");
-      ctx.fillStyle=g;
-      ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();
-    }
-
-    function drawSmoothTrail(points, hue, alpha, w){
-      if(points.length<2) return;
-      const p0=points[0], p1=points[points.length-1];
-      ctx.globalCompositeOperation="lighter";
-      const grad = ctx.createLinearGradient(p0.x,p0.y,p1.x,p1.y);
-      grad.addColorStop(0, hsla(hue,85,60,alpha*0.02));
-      grad.addColorStop(0.55, hsla(hue,92,66,alpha*0.14));
-      grad.addColorStop(1, hsla(hue,100,72,alpha*0.65));
-      ctx.strokeStyle=grad;
-      ctx.lineCap="round";
-      ctx.lineJoin="round";
-      ctx.lineWidth=w;
-
-      ctx.beginPath();
-      ctx.moveTo(points[0].x, points[0].y);
-      for(let i=1;i<points.length-1;i++){
-        const cpx=points[i].x, cpy=points[i].y;
-        const nx=(points[i].x+points[i+1].x)/2;
-        const ny=(points[i].y+points[i+1].y)/2;
-        ctx.quadraticCurveTo(cpx,cpy,nx,ny);
-      }
-      ctx.lineTo(points[points.length-1].x, points[points.length-1].y);
-      ctx.stroke();
-    }
-
-    const rockets=[];
-    const sparks=[];
-    const embers=[];
-
-    class Rocket{
-      constructor(){
-        this.x = rand(W*0.20, W*0.80);
-        this.y = H + 18;
-        this.ty = rand(H*0.10, H*0.38); // 更高绽放
-        this.h  = romanticHue();
-        this.vx = rand(-0.35,0.35);
-        this.vy = rand(-3.2,-2.3);
-        this.ay = 0.035;
-        this.t  = 0;
-        this.trail=[];
-        this.trailMax = Math.floor(78*Q);
-        this.mode = (Math.random()<0.33) ? "willow" : "chrys";
-        if(Math.random()<0.18) this.mode="ring";
-      }
-      update(dt){
-        this.t += dt;
-        this.vx += Math.sin(this.t*0.18)*0.008*dt;
-        this.vy += this.ay*dt;
-        this.x  += this.vx*dt;
-        this.y  += this.vy*dt;
-
-        this.trail.push({x:this.x+rand(-0.15,0.15), y:this.y+rand(-0.15,0.15)});
-        if(this.trail.length>this.trailMax) this.trail.shift();
-
-        if(this.y<=this.ty || this.t>520){
-          explode(this.x,this.y,this.h,this.mode);
-          return false;
-        }
-        return true;
-      }
-      draw(){
-        drawSmoothTrail(this.trail, this.h, 1.0, 2.2);
-        ctx.globalCompositeOperation="lighter";
-        ctx.fillStyle = hsla(this.h,95,75,0.95);
-        ctx.beginPath(); ctx.arc(this.x,this.y,2.3,0,Math.PI*2); ctx.fill();
-      }
-    }
-
-    class Spark{
-      constructor(x,y,hue,spd,ang,size,decay,grav,type="normal"){
-        this.x=x; this.y=y;
-        this.vx=Math.cos(ang)*spd;
-        this.vy=Math.sin(ang)*spd;
-        this.ay=grav;
-        this.h=(hue+rand(-10,10)+360)%360;
-        this.a=1;
-        this.decay=decay;
-        this.size=size;
-        this.type=type;
-
-        this.trail=[];
-        this.trailMax = Math.floor((type==="willow"? 70: 44)*Q);
-        this.twinkle = Math.random() < (type==="willow" ? 0.16 : 0.32);
-      }
-      update(dt){
-        this.vy += this.ay*dt;
-        this.x  += this.vx*dt;
-        this.y  += this.vy*dt;
-
-        const drag = Math.pow(typeDrag(this.type), dt);
-        this.vx *= drag; this.vy *= drag;
-
-        this.trail.push({x:this.x+rand(-0.10,0.10), y:this.y+rand(-0.10,0.10)});
-        if(this.trail.length>this.trailMax) this.trail.shift();
-
-        if(this.twinkle && Math.random()<0.10) this.a *= rand(0.88,0.995);
-        this.a -= this.decay*dt;
-        return this.a>0.02;
-      }
-      draw(){
-        const w = this.size * (this.type==="willow" ? 1.2 : 1.05);
-        drawSmoothTrail(this.trail, this.h, this.a, w);
-
-        ctx.globalCompositeOperation="lighter";
-        let a2=this.a;
-        if(this.twinkle) a2 *= (0.75+0.25*Math.sin(performance.now()*0.02 + this.x*0.02));
-        ctx.fillStyle=hsla(this.h,98,72,a2);
-        ctx.beginPath(); ctx.arc(this.x,this.y,this.size,0,Math.PI*2); ctx.fill();
-      }
-    }
-
-    function typeDrag(type){
-      if(type==="willow") return 0.992;
-      if(type==="ring")   return 0.989;
-      return 0.988;
-    }
-
-    class Ember{
-      constructor(x,y,h){
-        this.x=x; this.y=y;
-        this.vx=rand(-0.22,0.22);
-        this.vy=rand(0.06,0.36);
-        this.ay=rand(0.002,0.004);
-        this.h=(h+rand(-8,8)+360)%360;
-        this.a=rand(0.34,0.62);
-        this.decay=rand(0.0011,0.0028);
-        this.r=rand(0.7,1.4);
-        this.phase=rand(0,Math.PI*2);
-      }
-      update(dt){
-        this.phase += 0.06*dt;
-        this.vx += Math.sin(this.phase)*0.010*dt;
-        this.vy += this.ay*dt;
-        this.x  += this.vx*dt;
-        this.y  += this.vy*dt;
-        this.vx *= Math.pow(0.996, dt);
-        this.vy *= Math.pow(0.996, dt);
-        this.a  -= this.decay*dt;
-        return this.a>0.02 && this.y < H+80;
-      }
-      draw(){
-        ctx.globalCompositeOperation="lighter";
-        ctx.fillStyle=hsla(this.h,70,66,this.a);
-        ctx.beginPath(); ctx.arc(this.x,this.y,this.r,0,Math.PI*2); ctx.fill();
-      }
-    }
-
-    function explode(x,y,hue,mode){
-      bloom(x,y,hue);
-
-      const grav = rand(0.030,0.045);
-      if(mode==="chrys"){
-        const n = Math.floor(rand(110,160)*Q);
-        for(let i=0;i<n;i++){
-          const a = rand(0,Math.PI*2);
-          const sp = rand(1.0,3.2);
-          sparks.push(new Spark(x,y,hue,sp,a,rand(0.9,1.8),rand(0.006,0.011),grav,"normal"));
-        }
-        const eh=(hue+rand(35,75))%360;
-        for(let i=0;i<Math.floor(rand(50,80)*Q);i++) embers.push(new Ember(x+rand(-24,24),y+rand(-24,24),eh));
-
-        if(Math.random()<0.45){
-          setTimeout(()=>{
-            const h2=(hue+rand(70,140))%360;
-            bloom(x,y,h2);
-            const n2=Math.floor(rand(40,70)*Q);
-            for(let i=0;i<n2;i++){
-              const a=rand(0,Math.PI*2);
-              const sp=rand(0.7,2.0);
-              sparks.push(new Spark(x,y,h2,sp,a,rand(0.8,1.4),rand(0.010,0.016),grav*0.95,"normal"));
-            }
-          }, rand(650,950));
-        }
-      }
-
-      if(mode==="ring"){
-        const n = Math.floor(rand(100,150)*Q);
-        const ringSp=rand(1.6,3.0);
-        for(let i=0;i<n;i++){
-          const a=(i/n)*Math.PI*2 + rand(-0.015,0.015);
-          sparks.push(new Spark(x,y,hue,ringSp*rand(0.92,1.08),a,rand(0.9,1.6),rand(0.007,0.012),grav*0.92,"ring"));
-        }
-        const eh=(hue+rand(35,75))%360;
-        for(let i=0;i<Math.floor(rand(30,55)*Q);i++) embers.push(new Ember(x+rand(-26,26),y+rand(-26,26),eh));
-      }
-
-      if(mode==="willow"){
-        const gold=(rand(42,58))%360;
-        const n = Math.floor(rand(140,210)*Q);
-        for(let i=0;i<n;i++){
-          const a=rand(0,Math.PI*2);
-          const sp=rand(0.8,2.6);
-          sparks.push(new Spark(x,y,gold,sp,a,rand(0.95,1.9),rand(0.0038,0.0068),grav*1.18,"willow"));
-        }
-        for(let i=0;i<Math.floor(rand(70,120)*Q);i++) embers.push(new Ember(x+rand(-30,30),y+rand(-30,30),gold));
-      }
-    }
-
-    let last = performance.now();
-    let acc = 0;
-
-    function frame(t){
-      const rawDt = (t-last)/(1000/60);
-      last=t;
-      const dt = clamp(rawDt,0.6,1.6) * SLOW;
-
-      fadeBg();
-
-      acc += dt;
-      const density = clamp((W*H)/(1280*720),0.85,1.55);
-      const launchEvery = 220 / density;
-
-      if(acc > launchEvery){
-        acc = 0;
-        if(rockets.length < (lowEnd? 2: 3)){
-          rockets.push(new Rocket());
-          if(Math.random()<0.12){
-            setTimeout(()=>rockets.push(new Rocket()), rand(520,980));
-          }
-        }
-      }
-
-      for(let i=rockets.length-1;i>=0;i--){
-        const ok=rockets[i].update(dt);
-        rockets[i].draw();
-        if(!ok) rockets.splice(i,1);
-      }
-      for(let i=sparks.length-1;i>=0;i--){
-        const ok=sparks[i].update(dt);
-        sparks[i].draw();
-        if(!ok) sparks.splice(i,1);
-      }
-      for(let i=embers.length-1;i>=0;i--){
-        const ok=embers[i].update(dt);
-        embers[i].draw();
-        if(!ok) embers.splice(i,1);
-      }
-
-      requestAnimationFrame(frame);
-    }
-
-    ctx.fillStyle="#000"; ctx.fillRect(0,0,W,H);
-    requestAnimationFrame(frame);
-
-    // 文字入场
-    const card=document.getElementById("card");
-    const l1=document.getElementById("l1");
-    const l2=document.getElementById("l2");
-    const l3=document.getElementById("l3");
-
-    setTimeout(()=>card.classList.add("show"),280);
-    setTimeout(()=>{l1.style.opacity=1;l1.style.transform="translateY(0)";},680);
-    setTimeout(()=>{l2.style.opacity=1;l2.style.transform="translateY(0)";},980);
-    setTimeout(()=>{l3.style.opacity=1;l3.style.transform="translateY(0)";},1280);
-
-    // 轻触屏幕：放一束（不提示、不剧透）
-    let lastTap=0;
-    addEventListener("pointerdown",(e)=>{
-      const now=performance.now();
-      if(now-lastTap<650) return;
-      lastTap=now;
-
-      const r=new Rocket();
-      r.x = e.clientX + rand(-40,40);
-      r.ty = clamp(e.clientY, H*0.10, H*0.45);
-      r.mode = (Math.random()<0.6) ? "willow" : "ring";
-      r.h = romanticHue();
-      rockets.push(r);
-    }, {passive:true});
-  </script>
+  requestAnimationFrame(loop);
+}
+loop();
+</script>
 </body>
 </html>
