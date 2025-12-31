@@ -90,25 +90,25 @@
       text-align:center;
     }
 
-    /* ✅ 更透的卡片：烟花更穿透 */
+    /* 更透：烟花更穿透 */
     .card{
       max-width:min(1120px,94vw);
       width:100%;
-      padding:22px 16px;
+      padding:20px 14px;
       border-radius:26px;
 
       background:
-        radial-gradient(900px 420px at 50% 18%, rgba(255,255,255,.07), rgba(0,0,0,0) 62%),
-        rgba(0,0,0,.055);
+        radial-gradient(900px 420px at 50% 18%, rgba(255,255,255,.06), rgba(0,0,0,0) 62%),
+        rgba(0,0,0,.042);
 
-      backdrop-filter: blur(7px) saturate(160%);
-      -webkit-backdrop-filter: blur(7px) saturate(160%);
+      backdrop-filter: blur(6px) saturate(170%);
+      -webkit-backdrop-filter: blur(6px) saturate(170%);
 
       box-shadow:
-        0 18px 60px rgba(0,0,0,.36),
-        0 0 58px rgba(255,120,220,.10),
-        0 0 58px rgba(120,220,255,.09),
-        inset 0 0 0 1px rgba(255,255,255,.14);
+        0 18px 60px rgba(0,0,0,.34),
+        0 0 58px rgba(255,120,220,.09),
+        0 0 58px rgba(120,220,255,.08),
+        inset 0 0 0 1px rgba(255,255,255,.13);
 
       opacity:0;
       transform: translateY(10px) scale(.994);
@@ -116,7 +116,7 @@
     }
     .card.show{opacity:1; transform: translateY(0) scale(1);}
 
-    /* ✅ 更清晰的描边/阴影（iPhone 白字不糊） */
+    /* 清晰描边/阴影（iPhone 白字更利） */
     .stroke{
       -webkit-text-stroke: .42px rgba(0,0,0,.30);
       text-shadow:
@@ -125,31 +125,28 @@
       paint-order: stroke fill;
     }
 
-    /* 字体整体更精致一点 */
     .line1{
       font-family:"Great Vibes", cursive;
-      font-size:clamp(38px, 7.6vw, 88px);
+      font-size:clamp(38px, 7.4vw, 88px);
       margin:0 0 6px;
       color:#fff;
       opacity:0;
       transform: translateY(10px);
       transition: 760ms ease;
     }
-
     .line2{
       font-family:"Great Vibes", cursive;
-      font-size:clamp(20px, 4.7vw, 44px);
+      font-size:clamp(20px, 4.6vw, 44px);
       margin:0 0 8px;
       color:#fff;
       opacity:0;
       transform: translateY(10px);
       transition: 760ms ease;
     }
-
     .line3{
       font-family:"Zhi Mang Xing", cursive;
-      font-size:clamp(18px, 4.0vw, 34px);
-      line-height:1.66;
+      font-size:clamp(16px, 4.2vw, 32px);
+      line-height:1.62;
       margin:0;
       color:#fff;
       opacity:0;
@@ -157,26 +154,25 @@
       transition: 900ms ease;
     }
 
-    /* ✅ 手机端再透一点 + 让烟花空间更大 */
     @media (max-width:480px){
       .overlay{
         padding:
           calc(4.7vh + var(--safe-top))
           calc(5vw + var(--safe-right))
-          calc(5.2vh + var(--safe-bottom))
+          calc(5.3vh + var(--safe-bottom))
           calc(5vw + var(--safe-left));
       }
       .card{
-        padding:18px 14px;
+        padding:18px 12px;
         background:
-          radial-gradient(900px 420px at 50% 18%, rgba(255,255,255,.06), rgba(0,0,0,0) 62%),
-          rgba(0,0,0,.045);
-        backdrop-filter: blur(6px) saturate(165%);
-        -webkit-backdrop-filter: blur(6px) saturate(165%);
+          radial-gradient(900px 420px at 50% 18%, rgba(255,255,255,.055), rgba(0,0,0,0) 62%),
+          rgba(0,0,0,.038);
+        backdrop-filter: blur(5.5px) saturate(175%);
+        -webkit-backdrop-filter: blur(5.5px) saturate(175%);
       }
-      .line1{ font-size:clamp(34px, 8.2vw, 78px); }
-      .line2{ font-size:clamp(18px, 5.0vw, 38px); }
-      .line3{ font-size:clamp(16px, 4.4vw, 30px); line-height:1.62; }
+      .line1{ font-size:clamp(34px, 8.1vw, 78px); }
+      .line2{ font-size:clamp(18px, 4.9vw, 38px); }
+      .line3{ font-size:clamp(15px, 4.35vw, 30px); }
     }
   </style>
 </head>
@@ -198,112 +194,345 @@
   </div>
 
   <script>
-    /* ===== 更高绽放 + 更透背景 ===== */
-    const canvas=document.getElementById("fx");
-    const ctx=canvas.getContext("2d");
-    let W,H,DPR=Math.min(2,window.devicePixelRatio||1);
+    /* ==========================
+       逼真浪漫烟花（移动端优化）
+       - 自然拖尾：多段渐变 + 抖动
+       - 真实爆炸：外圈+内核+柳絮下垂
+       - 柔和光晕：bloom flash
+       - 节奏更慢：更像真实录像
+    ========================== */
+
+    const canvas = document.getElementById("fx");
+    const ctx = canvas.getContext("2d", { alpha:false, desynchronized:true });
+
+    let W=0, H=0;
+    const DPR = Math.min(2, window.devicePixelRatio || 1);
 
     function resize(){
-      W=innerWidth;H=innerHeight;
-      canvas.width=W*DPR;canvas.height=H*DPR;
+      W = Math.floor(innerWidth);
+      H = Math.floor(innerHeight);
+      canvas.width  = Math.floor(W * DPR);
+      canvas.height = Math.floor(H * DPR);
+      canvas.style.width = W + "px";
+      canvas.style.height = H + "px";
       ctx.setTransform(DPR,0,0,DPR,0,0);
     }
-    addEventListener("resize",resize);resize();
+    addEventListener("resize", resize, {passive:true});
+    resize();
 
-    const fireworks=[],particles=[];
-    const rand=(a,b)=>a+Math.random()*(b-a);
+    const rand = (a,b)=>a+Math.random()*(b-a);
+    const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+    const hsla=(h,s,l,a)=>`hsla(${h},${s}%,${l}%,${a})`;
 
-    class Firework{
-      constructor(){
-        this.x=rand(W*0.25,W*0.75);
-        this.y=H+20;
+    // 更慢的整体速度（越小越慢）
+    const SLOW = 0.55;
 
-        /* ✅ 绽放高度更高：从 0.25~0.55 → 0.12~0.42 */
-        this.ty = rand(H*0.12, H*0.42);
+    // 控制复杂度（移动端更稳）
+    const lowEnd = (navigator.deviceMemory && navigator.deviceMemory <= 3) || (navigator.connection && navigator.connection.saveData);
+    const Q = lowEnd ? 0.85 : 1.0;
 
-        /* 发射稍慢一点 */
-        this.vy=rand(-2.05,-1.45);
-
-        this.h=rand(0,360);
-        this.trail=[];
-      }
-      update(){
-        this.y+=this.vy;
-        this.trail.push({x:this.x,y:this.y});
-        if(this.trail.length>44)this.trail.shift();
-        if(this.y<=this.ty)this.explode();
-      }
-      draw(){
-        ctx.strokeStyle=`hsla(${this.h},100%,70%,.62)`;
-        ctx.lineWidth=2;
-        ctx.beginPath();
-        this.trail.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));
-        ctx.stroke();
-      }
-      explode(){
-        const n = 140; // 粒子略多一点更绚丽
-        for(let i=0;i<n;i++){
-          particles.push(new Particle(this.x,this.y,this.h));
-        }
-        this.dead=true;
-      }
+    // 浪漫配色倾向：粉/紫/金/青
+    function romanticHue(){
+      const palettes=[[330,360],[300,330],[40,65],[190,215],[260,290]];
+      const p=palettes[(Math.random()*palettes.length)|0];
+      return (rand(p[0],p[1]))%360;
     }
 
-    class Particle{
-      constructor(x,y,h){
-        this.x=x;this.y=y;
-        const a=rand(0,Math.PI*2);
-        const s=rand(.7,2.7);
-        this.vx=Math.cos(a)*s;
-        this.vy=Math.sin(a)*s;
-        this.h=(h+rand(-18,18)+360)%360;
-        this.life=1;
-        this.size=rand(1.5,2.4);
-      }
-      update(){
-        this.x+=this.vx;
-        this.y+=this.vy;
-        this.vy+=.020;   // 重力
-        this.vx*=0.992;  // 空气阻力
-        this.vy*=0.992;
-        this.life-=.014;
-      }
-      draw(){
-        ctx.fillStyle=`hsla(${this.h},100%,70%,${this.life})`;
-        ctx.beginPath();
-        ctx.arc(this.x,this.y,this.size,0,Math.PI*2);
-        ctx.fill();
-      }
-    }
-
-    function loop(){
-      /* 残影更柔一点，浪漫镜头感 */
-      ctx.fillStyle="rgba(0,0,0,.14)";
+    // 轻微背景残影（像镜头曝光）
+    function fadeBg(){
+      ctx.globalCompositeOperation="source-over";
+      ctx.fillStyle="rgba(0,0,0,0.11)";
       ctx.fillRect(0,0,W,H);
-
-      /* ✅ 发射频率稍慢一点 */
-      if(Math.random()<.024)fireworks.push(new Firework());
-
-      fireworks.forEach(f=>{f.update();f.draw();});
-      particles.forEach(p=>{p.update();p.draw();});
-
-      for(let i=fireworks.length-1;i>=0;i--) if(fireworks[i].dead) fireworks.splice(i,1);
-      for(let i=particles.length-1;i>=0;i--) if(particles[i].life<=0) particles.splice(i,1);
-
-      requestAnimationFrame(loop);
     }
-    loop();
 
-    /* 文字入场 */
+    function bloom(x,y,h){
+      ctx.globalCompositeOperation="lighter";
+      const r = rand(70,140);
+      const g = ctx.createRadialGradient(x,y,0,x,y,r);
+      g.addColorStop(0, hsla(h,90,75,0.30));
+      g.addColorStop(0.45, hsla((h+18)%360,85,68,0.12));
+      g.addColorStop(1, "rgba(0,0,0,0)");
+      ctx.fillStyle=g;
+      ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();
+    }
+
+    function drawSmoothTrail(points, hue, alpha, w){
+      if(points.length<2) return;
+      const p0=points[0], p1=points[points.length-1];
+      ctx.globalCompositeOperation="lighter";
+      const grad = ctx.createLinearGradient(p0.x,p0.y,p1.x,p1.y);
+      grad.addColorStop(0, hsla(hue,85,60,alpha*0.02));
+      grad.addColorStop(0.55, hsla(hue,92,66,alpha*0.14));
+      grad.addColorStop(1, hsla(hue,100,72,alpha*0.65));
+      ctx.strokeStyle=grad;
+      ctx.lineCap="round";
+      ctx.lineJoin="round";
+      ctx.lineWidth=w;
+
+      ctx.beginPath();
+      ctx.moveTo(points[0].x, points[0].y);
+      for(let i=1;i<points.length-1;i++){
+        const cpx=points[i].x, cpy=points[i].y;
+        const nx=(points[i].x+points[i+1].x)/2;
+        const ny=(points[i].y+points[i+1].y)/2;
+        ctx.quadraticCurveTo(cpx,cpy,nx,ny);
+      }
+      ctx.lineTo(points[points.length-1].x, points[points.length-1].y);
+      ctx.stroke();
+    }
+
+    const rockets=[];
+    const sparks=[];
+    const embers=[];
+
+    class Rocket{
+      constructor(){
+        this.x = rand(W*0.20, W*0.80);
+        this.y = H + 18;
+        // ✅ 绽放更高（更浪漫）
+        this.ty = rand(H*0.10, H*0.38);
+        this.h  = romanticHue();
+        this.vx = rand(-0.35,0.35);
+        this.vy = rand(-3.2,-2.3);
+        this.ay = 0.035;
+        this.t  = 0;
+        this.trail=[];
+        this.trailMax = Math.floor(78*Q);
+        this.mode = (Math.random()<0.33) ? "willow" : "chrys";
+        if(Math.random()<0.18) this.mode="ring";
+      }
+      update(dt){
+        this.t += dt;
+        // 轻微摆动，像真实风
+        this.vx += Math.sin(this.t*0.18)*0.008*dt;
+        this.vy += this.ay*dt;
+        this.x  += this.vx*dt;
+        this.y  += this.vy*dt;
+
+        this.trail.push({x:this.x+rand(-0.15,0.15), y:this.y+rand(-0.15,0.15)});
+        if(this.trail.length>this.trailMax) this.trail.shift();
+
+        if(this.y<=this.ty || this.t>520){
+          explode(this.x,this.y,this.h,this.mode);
+          return false;
+        }
+        return true;
+      }
+      draw(){
+        drawSmoothTrail(this.trail, this.h, 1.0, 2.2);
+        ctx.globalCompositeOperation="lighter";
+        ctx.fillStyle = hsla(this.h,95,75,0.95);
+        ctx.beginPath(); ctx.arc(this.x,this.y,2.3,0,Math.PI*2); ctx.fill();
+      }
+    }
+
+    class Spark{
+      constructor(x,y,hue,spd,ang,size,decay,grav,type="normal"){
+        this.x=x; this.y=y;
+        this.vx=Math.cos(ang)*spd;
+        this.vy=Math.sin(ang)*spd;
+        this.ay=grav;
+        this.h=(hue+rand(-10,10)+360)%360;
+        this.a=1;
+        this.decay=decay;
+        this.size=size;
+        this.type=type;
+
+        this.trail=[];
+        this.trailMax = Math.floor((type==="willow"? 70: 44)*Q);
+        this.twinkle = Math.random() < (type==="willow" ? 0.16 : 0.32);
+      }
+      update(dt){
+        this.vy += this.ay*dt;
+        this.x  += this.vx*dt;
+        this.y  += this.vy*dt;
+
+        const drag = Math.pow(typeDrag(this.type), dt);
+        this.vx *= drag; this.vy *= drag;
+
+        this.trail.push({x:this.x+rand(-0.10,0.10), y:this.y+rand(-0.10,0.10)});
+        if(this.trail.length>this.trailMax) this.trail.shift();
+
+        if(this.twinkle && Math.random()<0.10) this.a *= rand(0.88,0.995);
+        this.a -= this.decay*dt;
+        return this.a>0.02;
+      }
+      draw(){
+        const w = this.size * (this.type==="willow" ? 1.2 : 1.05);
+        drawSmoothTrail(this.trail, this.h, this.a, w);
+
+        ctx.globalCompositeOperation="lighter";
+        let a2=this.a;
+        if(this.twinkle) a2 *= (0.75+0.25*Math.sin(performance.now()*0.02 + this.x*0.02));
+        ctx.fillStyle=hsla(this.h,98,72,a2);
+        ctx.beginPath(); ctx.arc(this.x,this.y,this.size,0,Math.PI*2); ctx.fill();
+      }
+    }
+
+    function typeDrag(type){
+      if(type==="willow") return 0.992;
+      if(type==="ring")   return 0.989;
+      return 0.988;
+    }
+
+    class Ember{
+      constructor(x,y,h){
+        this.x=x; this.y=y;
+        this.vx=rand(-0.22,0.22);
+        this.vy=rand(0.06,0.36);
+        this.ay=rand(0.002,0.004);
+        this.h=(h+rand(-8,8)+360)%360;
+        this.a=rand(0.34,0.62);
+        this.decay=rand(0.0011,0.0028);
+        this.r=rand(0.7,1.4);
+        this.phase=rand(0,Math.PI*2);
+      }
+      update(dt){
+        this.phase += 0.06*dt;
+        this.vx += Math.sin(this.phase)*0.010*dt;
+        this.vy += this.ay*dt;
+        this.x  += this.vx*dt;
+        this.y  += this.vy*dt;
+        this.vx *= Math.pow(0.996, dt);
+        this.vy *= Math.pow(0.996, dt);
+        this.a  -= this.decay*dt;
+        return this.a>0.02 && this.y < H+80;
+      }
+      draw(){
+        ctx.globalCompositeOperation="lighter";
+        ctx.fillStyle=hsla(this.h,70,66,this.a);
+        ctx.beginPath(); ctx.arc(this.x,this.y,this.r,0,Math.PI*2); ctx.fill();
+      }
+    }
+
+    function explode(x,y,hue,mode){
+      bloom(x,y,hue);
+
+      const grav = rand(0.030,0.045);
+      if(mode==="chrys"){
+        const n = Math.floor(rand(110,160)*Q);
+        for(let i=0;i<n;i++){
+          const a = rand(0,Math.PI*2);
+          const sp = rand(1.0,3.2);
+          sparks.push(new Spark(x,y,hue,sp,a,rand(0.9,1.8),rand(0.006,0.011),grav,"normal"));
+        }
+        const eh=(hue+rand(35,75))%360;
+        for(let i=0;i<Math.floor(rand(50,80)*Q);i++) embers.push(new Ember(x+rand(-24,24),y+rand(-24,24),eh));
+
+        // 二次闪烁（更像真烟花）
+        if(Math.random()<0.45){
+          setTimeout(()=>{
+            const h2=(hue+rand(70,140))%360;
+            bloom(x,y,h2);
+            const n2=Math.floor(rand(40,70)*Q);
+            for(let i=0;i<n2;i++){
+              const a=rand(0,Math.PI*2);
+              const sp=rand(0.7,2.0);
+              sparks.push(new Spark(x,y,h2,sp,a,rand(0.8,1.4),rand(0.010,0.016),grav*0.95,"normal"));
+            }
+          }, rand(650,950));
+        }
+      }
+
+      if(mode==="ring"){
+        const n = Math.floor(rand(100,150)*Q);
+        const ringSp=rand(1.6,3.0);
+        for(let i=0;i<n;i++){
+          const a=(i/n)*Math.PI*2 + rand(-0.015,0.015);
+          sparks.push(new Spark(x,y,hue,ringSp*rand(0.92,1.08),a,rand(0.9,1.6),rand(0.007,0.012),grav*0.92,"ring"));
+        }
+        const eh=(hue+rand(35,75))%360;
+        for(let i=0;i<Math.floor(rand(30,55)*Q);i++) embers.push(new Ember(x+rand(-26,26),y+rand(-26,26),eh));
+      }
+
+      if(mode==="willow"){
+        // 金色柳絮：下垂慢、拖尾长（最浪漫）
+        const gold=(rand(42,58))%360;
+        const n = Math.floor(rand(140,210)*Q);
+        for(let i=0;i<n;i++){
+          const a=rand(0,Math.PI*2);
+          const sp=rand(0.8,2.6);
+          sparks.push(new Spark(x,y,gold,sp,a,rand(0.95,1.9),rand(0.0038,0.0068),grav*1.18,"willow"));
+        }
+        for(let i=0;i<Math.floor(rand(70,120)*Q);i++) embers.push(new Ember(x+rand(-30,30),y+rand(-30,30),gold));
+      }
+    }
+
+    // 动画主循环
+    let last = performance.now();
+    let acc = 0;
+
+    function frame(t){
+      const rawDt = (t-last)/(1000/60);
+      last=t;
+
+      const dt = clamp(rawDt,0.6,1.6) * SLOW; // ✅ 慢节奏
+      fadeBg();
+
+      // 发射节奏更像现实：稀疏 + 偶尔双响
+      acc += dt;
+      const density = clamp((W*H)/(1280*720),0.85,1.55);
+      const launchEvery = 220 / density; // 越大越慢
+
+      if(acc > launchEvery){
+        acc = 0;
+        if(rockets.length < (lowEnd? 2: 3)){
+          rockets.push(new Rocket());
+          if(Math.random()<0.12){
+            setTimeout(()=>rockets.push(new Rocket()), rand(520,980));
+          }
+        }
+      }
+
+      // 更新&绘制
+      for(let i=rockets.length-1;i>=0;i--){
+        const ok=rockets[i].update(dt);
+        rockets[i].draw();
+        if(!ok) rockets.splice(i,1);
+      }
+      for(let i=sparks.length-1;i>=0;i--){
+        const ok=sparks[i].update(dt);
+        sparks[i].draw();
+        if(!ok) sparks.splice(i,1);
+      }
+      for(let i=embers.length-1;i>=0;i--){
+        const ok=embers[i].update(dt);
+        embers[i].draw();
+        if(!ok) embers.splice(i,1);
+      }
+
+      requestAnimationFrame(frame);
+    }
+
+    // 开场底色
+    ctx.fillStyle="#000"; ctx.fillRect(0,0,W,H);
+    requestAnimationFrame(frame);
+
+    // 文字入场
     const card=document.getElementById("card");
     const l1=document.getElementById("l1");
     const l2=document.getElementById("l2");
     const l3=document.getElementById("l3");
 
-    setTimeout(()=>card.classList.add("show"),300);
-    setTimeout(()=>{l1.style.opacity=1;l1.style.transform="translateY(0)";},700);
-    setTimeout(()=>{l2.style.opacity=1;l2.style.transform="translateY(0)";},1000);
-    setTimeout(()=>{l3.style.opacity=1;l3.style.transform="translateY(0)";},1300);
+    setTimeout(()=>card.classList.add("show"),280);
+    setTimeout(()=>{l1.style.opacity=1;l1.style.transform="translateY(0)";},680);
+    setTimeout(()=>{l2.style.opacity=1;l2.style.transform="translateY(0)";},980);
+    setTimeout(()=>{l3.style.opacity=1;l3.style.transform="translateY(0)";},1280);
+
+    // 轻触屏幕：放一束“更浪漫”的柳絮或环形（不提示、不剧透）
+    let lastTap=0;
+    addEventListener("pointerdown",(e)=>{
+      const now=performance.now();
+      if(now-lastTap<650) return;
+      lastTap=now;
+
+      const r=new Rocket();
+      r.x = e.clientX + rand(-40,40);
+      r.ty = clamp(e.clientY, H*0.10, H*0.45);
+      r.mode = (Math.random()<0.6) ? "willow" : "ring";
+      r.h = romanticHue();
+      rockets.push(r);
+    }, {passive:true});
   </script>
 </body>
 </html>
