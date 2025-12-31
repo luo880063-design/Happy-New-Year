@@ -511,4 +511,40 @@
       for(let i=embers.length-1;i>=0;i--){
         const ok=embers[i].update(dt);
         embers[i].draw();
-        if(!
+        if(!ok) embers.splice(i,1);
+      }
+
+      requestAnimationFrame(frame);
+    }
+
+    ctx.fillStyle="#000"; ctx.fillRect(0,0,W,H);
+    requestAnimationFrame(frame);
+
+    // 文字入场
+    const card=document.getElementById("card");
+    const l1=document.getElementById("l1");
+    const l2=document.getElementById("l2");
+    const l3=document.getElementById("l3");
+
+    setTimeout(()=>card.classList.add("show"),280);
+    setTimeout(()=>{l1.style.opacity=1;l1.style.transform="translateY(0)";},680);
+    setTimeout(()=>{l2.style.opacity=1;l2.style.transform="translateY(0)";},980);
+    setTimeout(()=>{l3.style.opacity=1;l3.style.transform="translateY(0)";},1280);
+
+    // 轻触屏幕：放一束（不提示、不剧透）
+    let lastTap=0;
+    addEventListener("pointerdown",(e)=>{
+      const now=performance.now();
+      if(now-lastTap<650) return;
+      lastTap=now;
+
+      const r=new Rocket();
+      r.x = e.clientX + rand(-40,40);
+      r.ty = clamp(e.clientY, H*0.10, H*0.45);
+      r.mode = (Math.random()<0.6) ? "willow" : "ring";
+      r.h = romanticHue();
+      rockets.push(r);
+    }, {passive:true});
+  </script>
+</body>
+</html>
