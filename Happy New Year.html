@@ -6,12 +6,9 @@
   <meta name="theme-color" content="#000000" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <title>Happy New Year — To 小瑶</title>
 
-  <!-- 花体：英文 + 中文更柔更花体 -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Zhi+Mang+Xing&display=swap" rel="stylesheet">
+  <link rel="manifest" href="manifest.json">
+  <title>Happy New Year — To 小瑶</title>
 
   <style>
     :root{
@@ -21,11 +18,31 @@
       --safe-right: env(safe-area-inset-right);
     }
 
+    /* ======= 离线花体字体（可选）=======
+      方案A（推荐）：你把 woff2 放到 /fonts 目录，会自动使用
+      方案B：不放字体也没问题，会走系统手写/楷体 fallback
+    */
+    @font-face{
+      font-family: "GreatVibesLocal";
+      src:
+        local("Great Vibes"),
+        local("GreatVibes-Regular"),
+        url("./fonts/GreatVibes-Regular.woff2") format("woff2");
+      font-display: swap;
+    }
+    @font-face{
+      font-family: "ZhiMangXingLocal";
+      src:
+        local("Zhi Mang Xing"),
+        local("ZhiMangXing-Regular"),
+        local("STXingkai"),
+        local("FZKai-Z03"),
+        url("./fonts/ZhiMangXing-Regular.woff2") format("woff2");
+      font-display: swap;
+    }
+
     html, body {
-      margin: 0;
-      height: 100%;
-      overflow: hidden;
-      background: #000;
+      margin:0; height:100%; overflow:hidden; background:#000;
       touch-action: manipulation;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
@@ -33,12 +50,8 @@
       font-family: system-ui,-apple-system,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;
     }
 
-    canvas#fx {
-      position: fixed;
-      inset: 0;
-      width: 100vw;
-      height: 100vh;
-      display: block;
+    canvas#fx{
+      position:fixed; inset:0; width:100vw; height:100vh; display:block;
       background:
         radial-gradient(1400px 900px at 50% 72%, rgba(44,30,86,.40), rgba(0,0,0,1) 62%),
         radial-gradient(900px 600px at 18% 28%, rgba(255,80,180,.11), transparent 60%),
@@ -46,59 +59,35 @@
         radial-gradient(900px 600px at 50% 95%, rgba(255,210,90,.10), transparent 60%);
     }
 
-    /* 更浪漫：镜头暗角 + 轻柔雾光 */
-    .vignette {
-      pointer-events: none;
-      position: fixed;
-      inset: 0;
+    .vignette{
+      pointer-events:none; position:fixed; inset:0; mix-blend-mode:screen;
       background:
         radial-gradient(1200px 900px at 50% 55%, rgba(255,255,255,.06), rgba(0,0,0,.80) 74%),
         radial-gradient(900px 600px at 15% 32%, rgba(255,60,180,.11), transparent 62%),
         radial-gradient(900px 600px at 85% 35%, rgba(60,220,255,.11), transparent 62%),
         radial-gradient(900px 600px at 50% 92%, rgba(255,210,90,.08), transparent 60%);
-      mix-blend-mode: screen;
     }
 
-    .halo {
-      pointer-events: none;
-      position: fixed;
-      inset: 0;
-      z-index: 8;
-      opacity: 0.92;
-      background:
-        radial-gradient(900px 680px at 50% 55%,
-          rgba(255,120,220,.10),
-          rgba(120,220,255,.07) 40%,
-          rgba(0,0,0,0) 76%);
+    .halo{
+      pointer-events:none; position:fixed; inset:0; z-index:8; mix-blend-mode:screen;
+      opacity:.92;
+      background: radial-gradient(900px 680px at 50% 55%,
+        rgba(255,120,220,.10),
+        rgba(120,220,255,.07) 40%,
+        rgba(0,0,0,0) 76%);
       animation: haloBreath 6.4s ease-in-out infinite;
-      mix-blend-mode: screen;
     }
-    @keyframes haloBreath {
-      0%,100% { opacity: .70; filter: blur(0px); }
-      50%     { opacity: 1;    filter: blur(.35px); }
+    @keyframes haloBreath{0%,100%{opacity:.70;filter:blur(0)}50%{opacity:1;filter:blur(.35px)}}
+
+    .overlay{
+      position:fixed; inset:0;
+      padding: calc(6vh + var(--safe-top)) calc(6vw + var(--safe-right)) calc(6vh + var(--safe-bottom)) calc(6vw + var(--safe-left));
+      display:grid; place-items:center; pointer-events:none; text-align:center; z-index:20;
     }
 
-    /* 文字层：手机更清楚 + 安全区 */
-    .overlay {
-      position: fixed;
-      inset: 0;
-      padding:
-        calc(6vh + var(--safe-top))
-        calc(6vw + var(--safe-right))
-        calc(6vh + var(--safe-bottom))
-        calc(6vw + var(--safe-left));
-      display: grid;
-      place-items: center;
-      pointer-events: none;
-      text-align: center;
-      z-index: 20;
-    }
-
-    .card {
-      max-width: min(1120px, 94vw);
-      width: 100%;
-      padding: 30px 24px;
-      border-radius: 28px;
+    .card{
+      max-width:min(1120px,94vw); width:100%;
+      padding:30px 24px; border-radius:28px;
       background:
         radial-gradient(700px 320px at 50% 22%, rgba(255,255,255,.08), rgba(0,0,0,0) 62%),
         rgba(0,0,0,.48);
@@ -108,80 +97,61 @@
         0 0 70px rgba(255,120,220,.09),
         0 0 70px rgba(120,220,255,.07),
         inset 0 0 0 1px rgba(255,255,255,.14);
-      opacity: 0;
-      transform: translateY(12px) scale(.992);
+      opacity:0; transform: translateY(12px) scale(.992);
       transition: opacity 900ms ease, transform 900ms ease;
     }
-    .card.show { opacity: 1; transform: translateY(0) scale(1); }
+    .card.show{opacity:1; transform: translateY(0) scale(1);}
 
-    .stroke {
-      -webkit-text-stroke: 0.34px rgba(255,255,255,.16);
-      paint-order: stroke fill;
-    }
+    .stroke{ -webkit-text-stroke:.34px rgba(255,255,255,.16); paint-order: stroke fill; }
 
-    .line1 {
-      font-family: "Great Vibes", "Brush Script MT", cursive;
-      font-weight: 400;
-      font-size: clamp(50px, 9.2vw, 112px);
-      letter-spacing: 1px;
-      color: rgba(255,255,255,.995);
-      text-shadow:
-        0 0 6px rgba(255,255,255,.28),
-        0 0 24px rgba(255,120,220,.16),
-        0 0 42px rgba(120,220,255,.12);
-      margin: 0 0 6px 0;
-      opacity: 0;
-      transform: translateY(10px);
+    .line1{
+      font-family:"GreatVibesLocal","Snell Roundhand","Apple Chancery","Brush Script MT",cursive;
+      font-weight:400;
+      font-size:clamp(50px, 9.2vw, 112px);
+      letter-spacing:1px;
+      color:rgba(255,255,255,.995);
+      text-shadow: 0 0 6px rgba(255,255,255,.28), 0 0 24px rgba(255,120,220,.16), 0 0 42px rgba(120,220,255,.12);
+      margin:0 0 6px 0;
+      opacity:0; transform: translateY(10px);
       transition: opacity 760ms ease, transform 760ms ease;
     }
 
-    .line2 {
-      font-family: "Great Vibes", "Brush Script MT", cursive;
-      font-weight: 400;
-      font-size: clamp(30px, 5.6vw, 58px);
-      color: rgba(255,255,255,.97);
-      text-shadow:
-        0 0 6px rgba(255,255,255,.22),
-        0 0 22px rgba(255,210,90,.14);
-      margin: 0 0 16px 0;
-      opacity: 0;
-      transform: translateY(10px);
+    .line2{
+      font-family:"GreatVibesLocal","Snell Roundhand","Apple Chancery","Brush Script MT",cursive;
+      font-weight:400;
+      font-size:clamp(30px, 5.6vw, 58px);
+      color:rgba(255,255,255,.97);
+      text-shadow: 0 0 6px rgba(255,255,255,.22), 0 0 22px rgba(255,210,90,.14);
+      margin:0 0 16px 0;
+      opacity:0; transform: translateY(10px);
       transition: opacity 760ms ease, transform 760ms ease;
     }
 
-    /* 第三段：更大更清楚 + 更“花体” */
-    .line3 {
-      font-family: "Zhi Mang Xing", "STKaiti", "KaiTi", "PingFang SC", "Microsoft YaHei", sans-serif;
-      font-weight: 400;
-      font-size: clamp(28px, 4.8vw, 46px);
-      line-height: 1.85;
-      color: rgba(255,255,255,.99);
-      margin: 0;
-      padding: 0 4px;
-      opacity: 0;
-      transform: translateY(14px);
+    .line3{
+      font-family:"ZhiMangXingLocal","STXingkai","KaiTi","STKaiti","PingFang SC","Microsoft YaHei",sans-serif;
+      font-weight:400;
+      font-size:clamp(28px, 4.8vw, 46px);
+      line-height:1.85;
+      color:rgba(255,255,255,.99);
+      margin:0; padding:0 4px;
+      opacity:0; transform: translateY(14px);
       transition: opacity 900ms ease, transform 900ms ease;
-      text-shadow:
-        0 3px 14px rgba(0,0,0,.64),
-        0 0 10px rgba(255,255,255,.06);
+      text-shadow: 0 3px 14px rgba(0,0,0,.64), 0 0 10px rgba(255,255,255,.06);
     }
 
-    /* 小提示：不显眼、但让她知道可点 */
-    .hint {
-      position: fixed;
-      left: 50%;
-      bottom: calc(14px + var(--safe-bottom));
-      transform: translateX(-50%);
-      z-index: 30;
-      font-size: 12px;
-      color: rgba(255,255,255,.55);
-      letter-spacing: .2px;
-      text-shadow: 0 2px 10px rgba(0,0,0,.6);
-      opacity: .0;
+    .hint{
+      position:fixed; left:50%;
+      bottom:calc(14px + var(--safe-bottom));
+      transform:translateX(-50%);
+      z-index:30;
+      font-size:12px;
+      color:rgba(255,255,255,.55);
+      text-shadow:0 2px 10px rgba(0,0,0,.6);
+      opacity:0;
       transition: opacity 900ms ease;
-      pointer-events: none;
+      pointer-events:none;
     }
-    .hint.show { opacity: .75; }
+    .hint.show{opacity:.75;}
   </style>
 </head>
 
@@ -204,37 +174,35 @@
   <div class="hint" id="hint">轻触屏幕，会为你再放一束爱心烟花</div>
 
   <script>
-    // =========================
-    // 手机极致版：自动按性能调粒子 + 真·慢动作 + 不卡
-    // =========================
+    // ===== 离线缓存（首次打开后可无网继续打开）=====
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js").catch(()=>{});
+      });
+    }
 
-    // 你要“更慢”就调小这个（0.40~0.60）
-    const SLOW_MO = 0.42; // ✅ 比你之前明显更慢、更“电影感”
-
-    // 根据设备性能自动调“精致程度”（不需要你操心）
+    // ===== 手机极致：慢动作 + 自适应性能 =====
+    const SLOW_MO = 0.42; // 越小越慢（0.35~0.55）
     const isLowMem = (navigator.deviceMemory && navigator.deviceMemory <= 3);
     const isSaveData = (navigator.connection && navigator.connection.saveData);
     const isLikelyLowEnd = isLowMem || isSaveData;
-
-    const QUALITY = isLikelyLowEnd ? 0.78 : 1.0; // 低端机自动降一点点，保证顺滑
+    const QUALITY = isLikelyLowEnd ? 0.78 : 1.0;
 
     const canvas = document.getElementById("fx");
-    const ctx = canvas.getContext("2d", { alpha:false, desynchronized: true });
+    const ctx = canvas.getContext("2d", { alpha:false, desynchronized:true });
 
     let W=0,H=0;
-    let DPR = Math.min(2, window.devicePixelRatio || 1);
+    let DPR=Math.min(2, window.devicePixelRatio||1);
 
     function resize(){
-      W = Math.floor(window.innerWidth);
-      H = Math.floor(window.innerHeight);
-
-      // 移动端防卡：DPR * QUALITY
+      W=Math.floor(window.innerWidth);
+      H=Math.floor(window.innerHeight);
       const eff = Math.max(1, Math.min(2, DPR * QUALITY));
-      canvas.width = Math.floor(W * eff);
-      canvas.height = Math.floor(H * eff);
-      canvas.style.width = W + "px";
-      canvas.style.height = H + "px";
-      ctx.setTransform(eff, 0, 0, eff, 0, 0);
+      canvas.width=Math.floor(W*eff);
+      canvas.height=Math.floor(H*eff);
+      canvas.style.width=W+"px";
+      canvas.style.height=H+"px";
+      ctx.setTransform(eff,0,0,eff,0,0);
     }
     window.addEventListener("resize", resize, { passive:true });
     resize();
@@ -250,13 +218,9 @@
       return (rand(p[0],p[1]))%360;
     }
 
-    // 切后台自动省电
-    let running = true;
-    document.addEventListener("visibilitychange", () => {
-      running = !document.hidden;
-    });
+    let running=true;
+    document.addEventListener("visibilitychange", () => { running = !document.hidden; });
 
-    // 背景：残影更柔、更像镜头
     function fadeBackground(){
       ctx.globalCompositeOperation="source-over";
       ctx.fillStyle="rgba(0,0,0,0.10)";
@@ -273,14 +237,13 @@
       }
 
       ctx.globalCompositeOperation="lighter";
-      const starN = Math.floor(4 * QUALITY);
+      const starN=Math.floor(4*QUALITY);
       for(let i=0;i<starN;i++){
         ctx.fillStyle=`rgba(255,255,255,${rand(0.006,0.020)})`;
         ctx.fillRect(rand(0,W), rand(0,H), 1, 1);
       }
     }
 
-    // 散景
     const bokeh=[];
     class Bokeh{
       constructor(){ this.reset(true); }
@@ -294,8 +257,8 @@
         this.hue=pickRomanticHue();
       }
       update(dt){
-        this.x += this.vx * dt;
-        this.y += this.vy * dt;
+        this.x+=this.vx*dt;
+        this.y+=this.vy*dt;
         if(this.y<-180||this.x<-180||this.x>W+180) this.reset(false);
       }
       draw(){
@@ -307,25 +270,19 @@
         ctx.beginPath(); ctx.arc(this.x,this.y,this.r,0,Math.PI*2); ctx.fill();
       }
     }
-    const bokehCount = Math.floor((isLikelyLowEnd ? 9 : 11) * QUALITY);
-    for(let i=0;i<bokehCount;i++) bokeh.push(new Bokeh());
+    for(let i=0;i<Math.floor((isLikelyLowEnd?9:11)*QUALITY);i++) bokeh.push(new Bokeh());
 
-    // 更丝滑拖尾
     function drawTrail(points,hue,sat,lit,alpha,baseWidth){
       if(points.length<2) return;
       ctx.globalCompositeOperation="lighter";
-
       const p0=points[0], p1=points[points.length-1];
       const grad=ctx.createLinearGradient(p0.x,p0.y,p1.x,p1.y);
       grad.addColorStop(0,hsla(hue,sat,lit,alpha*0.016));
       grad.addColorStop(0.55,hsla(hue,sat,lit,alpha*0.10));
       grad.addColorStop(1,hsla(hue,sat,lit,alpha*0.60));
-
       ctx.strokeStyle=grad;
-      ctx.lineCap="round";
-      ctx.lineJoin="round";
+      ctx.lineCap="round"; ctx.lineJoin="round";
       ctx.lineWidth=baseWidth;
-
       ctx.beginPath();
       ctx.moveTo(points[0].x,points[0].y);
       for(let i=1;i<points.length-1;i++){
@@ -343,33 +300,24 @@
     class Rocket{
       constructor(x,y,tx,ty,hue,mode="normal"){
         this.x=x; this.y=y; this.tx=tx; this.ty=ty;
-
-        // ✅ 极慢上升（你要的“放慢很多”）
         this.vx=(tx-x)*0.008;
         this.vy=(ty-y)*0.008 - rand(1.05, 1.65);
         this.ay=0.012;
-
         this.life=0;
         this.hue=hue;
         this.mode=mode;
-
         this.trail=[];
-        this.trailMax=Math.floor(72 * QUALITY);
+        this.trailMax=Math.floor(72*QUALITY);
         this.wobble=rand(0.0010,0.0030);
       }
       update(dt){
         this.life += dt;
-
         this.vx += Math.sin(this.life*0.18)*this.wobble*dt;
         this.vy += this.ay*dt;
-
         this.x += this.vx*dt;
         this.y += this.vy*dt;
-
         this.trail.push({x:this.x+rand(-0.16,0.16), y:this.y+rand(-0.16,0.16)});
         if(this.trail.length>this.trailMax) this.trail.shift();
-
-        // ✅ 爆炸更晚
         if(this.y<=this.ty || this.life>420){
           (this.mode==="heart") ? explodeHeart(this.x,this.y,this.hue) : explodeRomantic(this.x,this.y,this.hue);
           return false;
@@ -378,41 +326,9 @@
       }
       draw(){
         drawTrail(this.trail,this.hue,80,58,1.0,2.05);
-
         ctx.globalCompositeOperation="lighter";
         ctx.fillStyle=hsla(this.hue,92,74,0.98);
         ctx.beginPath(); ctx.arc(this.x,this.y,2.25,0,Math.PI*2); ctx.fill();
-
-        if(Math.random()<0.14*QUALITY) particles.push(new Spark(this.x,this.y,(this.hue+rand(-14,14))%360));
-      }
-    }
-
-    class Spark{
-      constructor(x,y,hue){
-        this.x=x; this.y=y;
-        const a=rand(Math.PI*0.72,Math.PI*1.28);
-        const sp=rand(0.55,1.35);
-        this.vx=Math.cos(a)*sp;
-        this.vy=Math.sin(a)*sp;
-        this.ay=0.028;
-        this.hue=hue;
-        this.alpha=0.80;
-        this.decay=rand(0.010,0.022);
-        this.r=rand(0.65,1.15);
-      }
-      update(dt){
-        this.vy += this.ay*dt;
-        this.x  += this.vx*dt;
-        this.y  += this.vy*dt;
-        this.vx *= Math.pow(0.989, dt);
-        this.vy *= Math.pow(0.989, dt);
-        this.alpha -= this.decay*dt;
-        return this.alpha>0.03;
-      }
-      draw(){
-        ctx.globalCompositeOperation="lighter";
-        ctx.fillStyle=hsla(this.hue,100,76,this.alpha);
-        ctx.beginPath(); ctx.arc(this.x,this.y,this.r,0,Math.PI*2); ctx.fill();
       }
     }
 
@@ -422,21 +338,18 @@
         this.vx=Math.cos(angle)*speed;
         this.vy=Math.sin(angle)*speed;
         this.ay=grav;
-
         this.hue=(hue+rand(-10,10))%360;
         this.sat=rand(70,92);
         this.lit=rand(50,68);
         this.alpha=1;
         this.decay=decay;
         this.size=size;
-
         this.trail=[];
-        this.trailMax=Math.floor(rand(28,54) * QUALITY);
+        this.trailMax=Math.floor(rand(28,54)*QUALITY);
         this.twinkle=Math.random()<0.32;
         this.type=type;
-
         if(type==="willow"){
-          this.trailMax=Math.floor(rand(44,72) * QUALITY);
+          this.trailMax=Math.floor(rand(44,72)*QUALITY);
           this.decay*=0.55;
           this.ay*=1.15;
         }
@@ -445,13 +358,10 @@
         this.vy += this.ay*dt;
         this.x  += this.vx*dt;
         this.y  += this.vy*dt;
-
-        const drag = Math.pow(0.987, dt);
-        this.vx *= drag; this.vy *= drag;
-
+        const drag=Math.pow(0.987, dt);
+        this.vx*=drag; this.vy*=drag;
         this.trail.push({x:this.x+rand(-0.12,0.12), y:this.y+rand(-0.12,0.12)});
         if(this.trail.length>this.trailMax) this.trail.shift();
-
         if(this.twinkle && Math.random()<0.10) this.alpha*=rand(0.86,0.995);
         this.alpha -= this.decay*dt;
         return this.alpha>0.02;
@@ -504,31 +414,25 @@
       g.addColorStop(0,hsla(hueBase,90,80,0.34));
       g.addColorStop(0.40,hsla((hueBase+14)%360,85,70,0.13));
       g.addColorStop(1,"rgba(0,0,0,0)");
-      ctx.fillStyle=g;
-      ctx.beginPath(); ctx.arc(x,y,R,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle=g; ctx.beginPath(); ctx.arc(x,y,R,0,Math.PI*2); ctx.fill();
     }
 
-    // 爆炸：整体更慢、更“铺开”，更浪漫
     function explodeRomantic(x,y,hueBase){
       const roll=Math.random();
       const type=(roll<0.46)?"willow":(roll<0.80)?"chrys":(roll<0.92)?"ring":"crackle";
       flash(x,y,hueBase);
-
       const gravBase=rand(0.010,0.018);
-
-      // 数量也按 QUALITY 调，防卡但仍然精致
-      const mul = QUALITY;
+      const mul=QUALITY;
 
       if(type==="chrys"){
         const count=Math.floor(rand(110,160)*mul);
         for(let i=0;i<count;i++){
           const a=rand(0,Math.PI*2);
-          const sp=rand(1.1,3.2); // ✅ 更慢扩散
+          const sp=rand(1.1,3.2);
           particles.push(new Particle(x,y,hueBase,sp,a,rand(0.95,1.9),rand(0.006,0.011),gravBase));
         }
         const eh=(hueBase+rand(30,75))%360;
         for(let i=0;i<Math.floor(rand(45,75)*mul);i++) embers.push(new Ember(x+rand(-22,22),y+rand(-22,22),eh));
-
         if(Math.random()<0.42){
           setTimeout(()=>{
             const hue2=(hueBase+rand(70,140))%360;
@@ -538,7 +442,7 @@
               const sp=rand(0.8,2.1);
               particles.push(new Particle(x,y,hue2,sp,a,rand(0.85,1.55),rand(0.010,0.016),gravBase*0.92));
             }
-          }, rand(650,980)); // ✅ 二次花更慢更有层次
+          }, rand(650,980));
         }
       }
 
@@ -560,7 +464,7 @@
         const hue2=(hueBase+rand(-8,12))%360;
         for(let i=0;i<count;i++){
           const a=rand(0,Math.PI*2);
-          const sp=rand(0.9,2.6); // ✅ 垂柳更“飘”
+          const sp=rand(0.9,2.6);
           particles.push(new Particle(x,y,hue2,sp,a,rand(0.95,1.95),rand(0.0038,0.0068),gravBase*1.10,"willow"));
         }
         const eh=(hue2+rand(35,70))%360;
@@ -586,19 +490,18 @@
               const sp=rand(0.45,1.35);
               particles.push(new Particle(px,py,hue2,sp,a,rand(0.75,1.35),rand(0.012,0.020),gravBase*0.78));
             }
-          }, rand(900,1600)); // ✅ 噼啪更慢更浪漫
+          }, rand(900,1600));
         }
         const eh=(hueBase+rand(35,75))%360;
         for(let i=0;i<Math.floor(rand(26,46)*mul);i++) embers.push(new Ember(x+rand(-25,25),y+rand(-25,25),eh));
       }
     }
 
-    // 爱心烟花：更慢更温柔
     function explodeHeart(x,y,hueBase){
       flash(x,y,hueBase);
       const grav=rand(0.009,0.015);
       const scale=rand(0.85,1.08);
-      const outlinePts=Math.floor(170 * QUALITY);
+      const outlinePts=Math.floor(170*QUALITY);
       const baseSpeed=rand(1.0,1.9);
 
       for(let i=0;i<outlinePts;i++){
@@ -613,7 +516,7 @@
         particles.push(new Particle(x,y,h,sp,angle,rand(0.95,1.7),rand(0.006,0.011),grav));
       }
 
-      const fillCount=Math.floor(90 * QUALITY);
+      const fillCount=Math.floor(90*QUALITY);
       for(let i=0;i<fillCount;i++){
         const t=rand(0,Math.PI*2);
         const r=Math.pow(Math.random(),0.65);
@@ -643,49 +546,43 @@
       }
     }
 
-    function launch(x, y, ty, mode="normal"){
+    function launch(x,y,ty,mode="normal"){
       const hue=pickRomanticHue();
       const tx=x+rand(-110,110);
       rockets.push(new Rocket(x,y,tx,ty,hue,mode));
     }
 
-    // =========================
-    // 真·慢动作：dt * SLOW_MO
-    // =========================
     let tick=0;
-    let lastT = performance.now();
+    let lastT=performance.now();
 
     function frame(t){
       if(!running){
-        lastT = t;
+        lastT=t;
         requestAnimationFrame(frame);
         return;
       }
 
-      const rawDt = (t - lastT) / (1000/60);
-      lastT = t;
-
-      const dt = clamp(rawDt, 0.55, 1.7) * SLOW_MO;
+      const rawDt=(t-lastT)/(1000/60);
+      lastT=t;
+      const dt=clamp(rawDt,0.55,1.7)*SLOW_MO;
 
       fadeBackground();
       for(const b of bokeh){ b.update(dt); b.draw(); }
 
       tick += dt;
 
-      // ✅ 发射频率再慢：interval 大幅加大
-      const density = clamp((W*H)/(1280*720),0.85,1.55);
-      const interval = Math.floor(190 / density); // 越大越慢
+      const density=clamp((W*H)/(1280*720),0.85,1.55);
+      const interval=Math.floor(190/density);
 
-      if(tick % interval < dt && rockets.length < Math.floor(3*QUALITY)+1){
+      if(tick%interval < dt && rockets.length < Math.floor(3*QUALITY)+1){
         const x=rand(W*0.22,W*0.78);
         const ty=rand(H*0.18,H*0.54);
         const mode=(Math.random()<0.28)?"heart":"normal";
-        launch(x, H+16, ty, mode);
+        launch(x,H+16,ty,mode);
 
-        // 极少双发，且延迟更长
         if(Math.random()<0.06){
           setTimeout(()=>{
-            launch(rand(W*0.22,W*0.78), H+16, rand(H*0.20,H*0.58), (Math.random()<0.22)?"heart":"normal");
+            launch(rand(W*0.22,W*0.78),H+16,rand(H*0.20,H*0.58),(Math.random()<0.22)?"heart":"normal");
           }, rand(1200,2000));
         }
       }
@@ -709,14 +606,11 @@
       requestAnimationFrame(frame);
     }
 
-    // 首帧黑底
     ctx.fillStyle="#000";
     ctx.fillRect(0,0,W,H);
     requestAnimationFrame(frame);
 
-    // =========================
-    // 文字入场（打开就有全部内容）
-    // =========================
+    // 文字入场
     const card=document.getElementById("card");
     const l1=document.getElementById("l1");
     const l2=document.getElementById("l2");
@@ -729,22 +623,21 @@
     setTimeout(()=>{l3.style.opacity=1;l3.style.transform="translateY(0)";},1100);
     setTimeout(()=>hint.classList.add("show"),2200);
 
-    // 开场“礼花”更慢更有仪式感
-    setTimeout(()=>launch(W*0.50,H+16,H*0.34,"heart"), 1700);
-    setTimeout(()=>launch(W*0.34,H+16,H*0.42,"normal"), 2600);
-    setTimeout(()=>launch(W*0.66,H+16,H*0.44,"normal"), 3500);
+    // 开场更慢更有仪式感
+    setTimeout(()=>launch(W*0.50,H+16,H*0.34,"heart"),1700);
+    setTimeout(()=>launch(W*0.34,H+16,H*0.42,"normal"),2600);
+    setTimeout(()=>launch(W*0.66,H+16,H*0.44,"normal"),3500);
 
-    // 轻触屏幕：加一束爱心烟花（不疯狂连发）
+    // 轻触：加一束爱心烟花
     let lastTap=0;
     window.addEventListener("pointerdown",(e)=>{
       const t=now();
       if(t-lastTap<700) return;
       lastTap=t;
 
-      const x=e.clientX;
-      const y=e.clientY;
+      const x=e.clientX, y=e.clientY;
       const ty=clamp(y,H*0.12,H*0.62);
-      rockets.push(new Rocket(x+rand(-60,60), H+16, x, ty, pickRomanticHue(), "heart"));
+      rockets.push(new Rocket(x+rand(-60,60),H+16,x,ty,pickRomanticHue(),"heart"));
     }, { passive:true });
   </script>
 </body>
