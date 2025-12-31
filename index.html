@@ -20,145 +20,87 @@
       --safe-left: env(safe-area-inset-left);
       --safe-right: env(safe-area-inset-right);
     }
-
     html,body{
-      margin:0;
-      height:100%;
-      overflow:hidden;
-      background:#000;
+      margin:0;height:100%;
+      overflow:hidden;background:#000;
       -webkit-font-smoothing: antialiased;
       text-rendering: geometricPrecision;
       font-family: system-ui,-apple-system,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;
     }
-
     canvas#fx{
-      position:fixed;
-      inset:0;
-      width:100vw;
-      height:100vh;
-      display:block;
+      position:fixed;inset:0;width:100vw;height:100vh;display:block;
       background:
         radial-gradient(1400px 900px at 50% 72%, rgba(44,30,86,.42), rgba(0,0,0,1) 62%),
         radial-gradient(900px 600px at 18% 28%, rgba(255,80,180,.12), transparent 60%),
         radial-gradient(900px 600px at 82% 32%, rgba(120,220,255,.11), transparent 60%),
         radial-gradient(900px 600px at 50% 95%, rgba(255,210,90,.10), transparent 60%);
     }
-
     .vignette{
-      pointer-events:none;
-      position:fixed;
-      inset:0;
-      mix-blend-mode:screen;
+      pointer-events:none;position:fixed;inset:0;mix-blend-mode:screen;
       background:
         radial-gradient(1200px 900px at 50% 55%, rgba(255,255,255,.06), rgba(0,0,0,.82) 74%),
         radial-gradient(900px 600px at 15% 32%, rgba(255,60,180,.11), transparent 62%),
         radial-gradient(900px 600px at 85% 35%, rgba(60,220,255,.11), transparent 62%),
         radial-gradient(900px 600px at 50% 92%, rgba(255,210,90,.08), transparent 60%);
     }
-
     .halo{
-      pointer-events:none;
-      position:fixed;
-      inset:0;
-      z-index:8;
-      mix-blend-mode:screen;
+      pointer-events:none;position:fixed;inset:0;z-index:8;mix-blend-mode:screen;
       opacity:.85;
-      background: radial-gradient(
-        900px 680px at 50% 55%,
-        rgba(255,120,220,.10),
-        rgba(120,220,255,.07) 40%,
-        rgba(0,0,0,0) 76%
-      );
+      background: radial-gradient(900px 680px at 50% 55%,
+        rgba(255,120,220,.10), rgba(120,220,255,.07) 40%, rgba(0,0,0,0) 76%);
       animation: haloBreath 6.4s ease-in-out infinite;
     }
     @keyframes haloBreath{0%,100%{opacity:.62;}50%{opacity:1;}}
 
     .overlay{
-      position:fixed;
-      inset:0;
-      z-index:20;
-      padding:
-        calc(4.8vh + var(--safe-top))
-        calc(5vw + var(--safe-right))
-        calc(5.2vh + var(--safe-bottom))
-        calc(5vw + var(--safe-left));
-      display:grid;
-      place-items:center;
-      pointer-events:none;
-      text-align:center;
+      position:fixed;inset:0;z-index:20;
+      padding: calc(4.8vh + var(--safe-top)) calc(5vw + var(--safe-right))
+               calc(5.2vh + var(--safe-bottom)) calc(5vw + var(--safe-left));
+      display:grid;place-items:center;pointer-events:none;text-align:center;
     }
-
-    /* 更透：烟花穿透 */
     .card{
-      max-width:min(1120px,94vw);
-      width:100%;
-      padding:18px 12px;
-      border-radius:26px;
-
+      max-width:min(1120px,94vw);width:100%;
+      padding:18px 12px;border-radius:26px;
       background:
-        radial-gradient(900px 420px at 50% 18%, rgba(255,255,255,.055), rgba(0,0,0,0) 62%),
-        rgba(0,0,0,.038);
-
-      backdrop-filter: blur(5.5px) saturate(175%);
-      -webkit-backdrop-filter: blur(5.5px) saturate(175%);
-
+        radial-gradient(900px 420px at 50% 18%, rgba(255,255,255,.05), rgba(0,0,0,0) 62%),
+        rgba(0,0,0,.032);
+      backdrop-filter: blur(5.2px) saturate(180%);
+      -webkit-backdrop-filter: blur(5.2px) saturate(180%);
       box-shadow:
         0 18px 60px rgba(0,0,0,.34),
-        0 0 58px rgba(255,120,220,.09),
-        0 0 58px rgba(120,220,255,.08),
-        inset 0 0 0 1px rgba(255,255,255,.13);
-
-      opacity:0;
-      transform: translateY(10px) scale(.994);
-      transition: opacity 900ms ease, transform 900ms ease;
+        0 0 70px rgba(255,120,220,.10),
+        0 0 70px rgba(120,220,255,.09),
+        inset 0 0 0 1px rgba(255,255,255,.12);
+      opacity:0;transform:translateY(10px) scale(.994);
+      transition:opacity 900ms ease, transform 900ms ease;
     }
-    .card.show{opacity:1; transform: translateY(0) scale(1);}
+    .card.show{opacity:1;transform:translateY(0) scale(1);}
 
     .stroke{
-      -webkit-text-stroke: .42px rgba(0,0,0,.30);
-      text-shadow:
-        0 1px 1px rgba(0,0,0,.35),
-        0 4px 18px rgba(0,0,0,.55);
-      paint-order: stroke fill;
+      -webkit-text-stroke:.42px rgba(0,0,0,.30);
+      text-shadow:0 1px 1px rgba(0,0,0,.35), 0 4px 18px rgba(0,0,0,.55);
+      paint-order:stroke fill;
     }
-
     .line1{
       font-family:"Great Vibes",cursive;
       font-size:clamp(34px, 8.1vw, 78px);
-      margin:0 0 6px;
-      color:#fff;
-      opacity:0;
-      transform: translateY(10px);
-      transition: 760ms ease;
+      margin:0 0 6px;color:#fff;opacity:0;transform:translateY(10px);
+      transition:760ms ease;
     }
-
     .line2{
       font-family:"Great Vibes",cursive;
       font-size:clamp(18px, 4.9vw, 38px);
-      margin:0 0 8px;
-      color:#fff;
-      opacity:0;
-      transform: translateY(10px);
-      transition: 760ms ease;
+      margin:0 0 8px;color:#fff;opacity:0;transform:translateY(10px);
+      transition:760ms ease;
     }
-
     .line3{
       font-family:"Ma Shan Zheng",cursive;
       font-size:clamp(16px, 4.4vw, 30px);
-      line-height:1.78;
-      letter-spacing:.05em;
-      color:#fff;
-
-      -webkit-text-stroke: .55px rgba(0,0,0,.38);
-      paint-order: stroke fill;
-      text-shadow:
-        0 1px 0 rgba(0,0,0,.35),
-        0 3px 10px rgba(0,0,0,.55),
-        0 0 1px rgba(255,255,255,.12);
-
-      opacity:0;
-      transform: translateY(12px);
-      transition: 900ms ease;
+      line-height:1.78;letter-spacing:.05em;color:#fff;
+      -webkit-text-stroke:.55px rgba(0,0,0,.38);
+      paint-order:stroke fill;
+      text-shadow:0 1px 0 rgba(0,0,0,.35), 0 3px 10px rgba(0,0,0,.55), 0 0 1px rgba(255,255,255,.12);
+      opacity:0;transform:translateY(12px);transition:900ms ease;
     }
   </style>
 </head>
@@ -179,366 +121,358 @@
     </div>
   </div>
 
-  <script>
-    /* =======================================================
-       自动发射｜更高爆点（在文字框上方）｜手机更逼真烟花
-    ======================================================= */
+<script>
+/* ===========================
+   全自动高空绽放｜更绚烂逼真
+=========================== */
+const canvas=document.getElementById("fx");
+const ctx=canvas.getContext("2d",{alpha:false,desynchronized:true});
 
-    const canvas = document.getElementById("fx");
-    const ctx = canvas.getContext("2d", { alpha:false, desynchronized:true });
+let W=0,H=0;
+const DPR=Math.min(2,window.devicePixelRatio||1);
+function resize(){
+  W=Math.floor(innerWidth);H=Math.floor(innerHeight);
+  canvas.width=Math.floor(W*DPR);canvas.height=Math.floor(H*DPR);
+  canvas.style.width=W+"px";canvas.style.height=H+"px";
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+}
+addEventListener("resize",resize,{passive:true});resize();
 
-    let W=0, H=0;
-    const DPR = Math.min(2, window.devicePixelRatio || 1);
+const rand=(a,b)=>a+Math.random()*(b-a);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const hsla=(h,s,l,a)=>`hsla(${h},${s}%,${l}%,${a})`;
 
-    function resize(){
-      W = Math.floor(innerWidth);
-      H = Math.floor(innerHeight);
-      canvas.width  = Math.floor(W * DPR);
-      canvas.height = Math.floor(H * DPR);
-      canvas.style.width = W + "px";
-      canvas.style.height = H + "px";
-      ctx.setTransform(DPR,0,0,DPR,0,0);
+// 更慢更像录像，但频率更高（更热闹）
+const SLOW=0.62;
+
+// 性能自适应
+const lowEnd=(navigator.deviceMemory&&navigator.deviceMemory<=3)||(navigator.connection&&navigator.connection.saveData);
+const Q=lowEnd?0.80:1.0;
+
+// 浪漫配色
+function romanticHue(){
+  const palettes=[[330,360],[300,330],[40,65],[190,215],[260,290]];
+  const p=palettes[(Math.random()*palettes.length)|0];
+  return (rand(p[0],p[1]))%360;
+}
+
+// 背景残影（更像长曝光）
+function fadeBg(){
+  ctx.globalCompositeOperation="source-over";
+  ctx.fillStyle="rgba(0,0,0,0.085)";
+  ctx.fillRect(0,0,W,H);
+}
+
+// bloom 光晕（更强，绽放更明显）
+function bloom(x,y,h){
+  ctx.globalCompositeOperation="lighter";
+  const r=rand(110,200);
+  const g=ctx.createRadialGradient(x,y,0,x,y,r);
+  g.addColorStop(0, hsla(h,95,80,0.34));
+  g.addColorStop(0.42, hsla((h+14)%360,90,72,0.16));
+  g.addColorStop(1,"rgba(0,0,0,0)");
+  ctx.fillStyle=g;
+  ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();
+}
+
+// 丝滑拖尾（曲线+渐变）
+function drawSmoothTrail(points,hue,alpha,w){
+  if(points.length<2) return;
+  const p0=points[0],p1=points[points.length-1];
+  ctx.globalCompositeOperation="lighter";
+  const grad=ctx.createLinearGradient(p0.x,p0.y,p1.x,p1.y);
+  grad.addColorStop(0, hsla(hue,90,55,alpha*0.02));
+  grad.addColorStop(0.55, hsla(hue,96,66,alpha*0.18));
+  grad.addColorStop(1, hsla(hue,100,74,alpha*0.75));
+  ctx.strokeStyle=grad;
+  ctx.lineCap="round";ctx.lineJoin="round";ctx.lineWidth=w;
+
+  ctx.beginPath();
+  ctx.moveTo(points[0].x,points[0].y);
+  for(let i=1;i<points.length-1;i++){
+    const cpx=points[i].x,cpy=points[i].y;
+    const nx=(points[i].x+points[i+1].x)/2;
+    const ny=(points[i].y+points[i+1].y)/2;
+    ctx.quadraticCurveTo(cpx,cpy,nx,ny);
+  }
+  ctx.lineTo(points[points.length-1].x,points[points.length-1].y);
+  ctx.stroke();
+}
+
+// ✅ 爆点高度：集中在文字框上方（更高）
+function burstY(){
+  // 上方 6%~22%：绝对在文字框上方
+  return rand(H*0.06, H*0.22);
+}
+function launchX(){ return rand(W*0.12, W*0.88); }
+
+const rockets=[],sparks=[],embers=[];
+
+function typeDrag(type){
+  if(type==="willow") return 0.993;
+  if(type==="ring") return 0.989;
+  return 0.988;
+}
+
+class Rocket{
+  constructor(){
+    this.x=launchX();
+    this.y=H+28;
+    this.ty=burstY();
+    this.h=romanticHue();
+    this.vx=rand(-0.30,0.30);
+    this.vy=rand(-3.9,-3.1);  // 上升更有力度，能达到更高爆点
+    this.ay=0.030;
+    this.t=0;
+
+    this.trail=[];
+    this.trailMax=Math.floor(110*Q);
+
+    // 模式：更偏向“绚烂”
+    const r=Math.random();
+    this.mode=(r<0.52)?"willow":(r<0.85)?"chrys":"ring";
+  }
+  update(dt){
+    this.t+=dt;
+    // 风摆
+    this.vx+=Math.sin(this.t*0.16)*0.010*dt;
+    this.vy+=this.ay*dt;
+
+    this.x+=this.vx*dt;
+    this.y+=this.vy*dt;
+
+    this.trail.push({x:this.x+rand(-0.18,0.18), y:this.y+rand(-0.18,0.18)});
+    if(this.trail.length>this.trailMax) this.trail.shift();
+
+    if(this.y<=this.ty || this.t>700){
+      explode(this.x,this.y,this.h,this.mode);
+      return false;
     }
-    addEventListener("resize", resize, {passive:true});
-    resize();
+    return true;
+  }
+  draw(){
+    drawSmoothTrail(this.trail,this.h,1.0,2.35);
+    ctx.globalCompositeOperation="lighter";
+    ctx.fillStyle=hsla(this.h,98,80,0.98);
+    ctx.beginPath();ctx.arc(this.x,this.y,2.25,0,Math.PI*2);ctx.fill();
+  }
+}
 
-    const rand=(a,b)=>a+Math.random()*(b-a);
-    const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-    const hsla=(h,s,l,a)=>`hsla(${h},${s}%,${l}%,${a})`;
+class Spark{
+  constructor(x,y,hue,spd,ang,size,decay,grav,type="normal"){
+    this.x=x;this.y=y;
+    this.vx=Math.cos(ang)*spd;
+    this.vy=Math.sin(ang)*spd;
+    this.ay=grav;
+    this.h=(hue+rand(-10,10)+360)%360;
+    this.a=1;
+    this.decay=decay;
+    this.size=size;
+    this.type=type;
 
-    // 速度/节奏：浪漫偏慢
-    const SLOW = 0.62;
+    this.trail=[];
+    this.trailMax=Math.floor((type==="willow"?110:78)*Q);
+    this.twinkle=Math.random()<(type==="willow"?0.20:0.32);
+  }
+  update(dt){
+    this.vy+=this.ay*dt;
+    this.x+=this.vx*dt;
+    this.y+=this.vy*dt;
 
-    // 性能自适应
-    const lowEnd = (navigator.deviceMemory && navigator.deviceMemory <= 3) ||
-                   (navigator.connection && navigator.connection.saveData);
-    const Q = lowEnd ? 0.82 : 1.0;
+    const drag=Math.pow(typeDrag(this.type),dt);
+    this.vx*=drag; this.vy*=drag;
 
-    // 颜色：粉/紫/金/青
-    function romanticHue(){
-      const palettes=[[330,360],[300,330],[40,65],[190,215],[260,290]];
-      const p=palettes[(Math.random()*palettes.length)|0];
-      return (rand(p[0],p[1]))%360;
+    this.trail.push({x:this.x+rand(-0.12,0.12), y:this.y+rand(-0.12,0.12)});
+    if(this.trail.length>this.trailMax) this.trail.shift();
+
+    if(this.twinkle && Math.random()<0.10) this.a*=rand(0.90,0.995);
+    this.a-=this.decay*dt;
+    return this.a>0.02;
+  }
+  draw(){
+    const w=this.size*(this.type==="willow"?1.25:1.10);
+    drawSmoothTrail(this.trail,this.h,this.a,w);
+
+    ctx.globalCompositeOperation="lighter";
+    let a2=this.a;
+    if(this.twinkle) a2*=(0.75+0.25*Math.sin(performance.now()*0.018+this.x*0.02));
+    ctx.fillStyle=hsla(this.h,100,76,a2);
+    ctx.beginPath();ctx.arc(this.x,this.y,this.size,0,Math.PI*2);ctx.fill();
+  }
+}
+
+class Ember{
+  constructor(x,y,h){
+    this.x=x;this.y=y;
+    this.vx=rand(-0.26,0.26);
+    this.vy=rand(0.05,0.42);
+    this.ay=rand(0.002,0.0046);
+    this.h=(h+rand(-8,8)+360)%360;
+    this.a=rand(0.30,0.62);
+    this.decay=rand(0.0009,0.0024);
+    this.r=rand(0.7,1.6);
+    this.phase=rand(0,Math.PI*2);
+  }
+  update(dt){
+    this.phase+=0.06*dt;
+    this.vx+=Math.sin(this.phase)*0.010*dt;
+    this.vy+=this.ay*dt;
+    this.x+=this.vx*dt;
+    this.y+=this.vy*dt;
+    this.vx*=Math.pow(0.996,dt);
+    this.vy*=Math.pow(0.996,dt);
+    this.a-=this.decay*dt;
+    return this.a>0.02 && this.y<H+120;
+  }
+  draw(){
+    ctx.globalCompositeOperation="lighter";
+    ctx.fillStyle=hsla(this.h,70,66,this.a);
+    ctx.beginPath();ctx.arc(this.x,this.y,this.r,0,Math.PI*2);ctx.fill();
+  }
+}
+
+function explode(x,y,hue,mode){
+  bloom(x,y,hue);
+  const grav=rand(0.030,0.047);
+  const pop=Math.random();
+
+  if(mode==="chrys"){
+    // 外圈 + 内核：更像“绽放”
+    const n=Math.floor(rand(160,230)*Q);
+    for(let i=0;i<n;i++){
+      const a=rand(0,Math.PI*2);
+      const sp=rand(1.2,3.9);
+      sparks.push(new Spark(x,y,hue,sp,a,rand(0.9,2.0),rand(0.006,0.010),grav,"normal"));
     }
-
-    // 背景残影（更像录像曝光）
-    function fadeBg(){
-      ctx.globalCompositeOperation="source-over";
-      ctx.fillStyle="rgba(0,0,0,0.10)";
-      ctx.fillRect(0,0,W,H);
+    const core=(hue+rand(15,40))%360;
+    const n2=Math.floor(rand(60,110)*Q);
+    for(let i=0;i<n2;i++){
+      const a=rand(0,Math.PI*2);
+      const sp=rand(0.6,2.2);
+      sparks.push(new Spark(x,y,core,sp,a,rand(0.8,1.5),rand(0.010,0.016),grav*0.95,"normal"));
     }
-
-    // bloom 光晕
-    function bloom(x,y,h){
-      ctx.globalCompositeOperation="lighter";
-      const r = rand(85,165);
-      const g = ctx.createRadialGradient(x,y,0,x,y,r);
-      g.addColorStop(0, hsla(h,92,78,0.30));
-      g.addColorStop(0.42, hsla((h+16)%360,88,70,0.13));
-      g.addColorStop(1, "rgba(0,0,0,0)");
-      ctx.fillStyle=g;
-      ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();
+    for(let i=0;i<Math.floor(rand(70,120)*Q);i++){
+      embers.push(new Ember(x+rand(-30,30),y+rand(-30,30),core));
     }
-
-    // 丝滑拖尾
-    function drawSmoothTrail(points, hue, alpha, w){
-      if(points.length < 2) return;
-      const p0=points[0], p1=points[points.length-1];
-      ctx.globalCompositeOperation="lighter";
-      const grad = ctx.createLinearGradient(p0.x,p0.y,p1.x,p1.y);
-      grad.addColorStop(0, hsla(hue,88,58,alpha*0.03));
-      grad.addColorStop(0.55, hsla(hue,95,66,alpha*0.16));
-      grad.addColorStop(1, hsla(hue,100,72,alpha*0.68));
-      ctx.strokeStyle=grad;
-      ctx.lineCap="round";
-      ctx.lineJoin="round";
-      ctx.lineWidth=w;
-
-      ctx.beginPath();
-      ctx.moveTo(points[0].x, points[0].y);
-      for(let i=1;i<points.length-1;i++){
-        const cpx=points[i].x, cpy=points[i].y;
-        const nx=(points[i].x+points[i+1].x)/2;
-        const ny=(points[i].y+points[i+1].y)/2;
-        ctx.quadraticCurveTo(cpx,cpy,nx,ny);
-      }
-      ctx.lineTo(points[points.length-1].x, points[points.length-1].y);
-      ctx.stroke();
-    }
-
-    // ========= 核心：保证“爆点在文字框上方” =========
-    function calcBurstY(){
-      // 文字卡片默认在屏幕中间，想让烟花在它上方：
-      // 设爆点分布在屏幕上方 8% ~ 30%（很高但不顶住安全区）
-      const top = H * 0.06;
-      const bottom = H * 0.28;
-      return rand(top, bottom);
-    }
-
-    // 让火箭主要从下方/两侧出发，视觉更真实
-    function calcLaunchX(){
-      return rand(W*0.15, W*0.85);
-    }
-
-    const rockets=[];
-    const sparks=[];
-    const embers=[];
-
-    class Rocket{
-      constructor(){
-        this.x = calcLaunchX();
-        this.y = H + 26;
-
-        // ✅ 爆点更高：在文字框上方
-        this.ty = calcBurstY();
-
-        this.h  = romanticHue();
-        this.vx = rand(-0.32,0.32);
-        this.vy = rand(-3.6,-2.9);   // 更慢更像真实
-        this.ay = 0.032;
-        this.t  = 0;
-
-        this.trail=[];
-        this.trailMax = Math.floor(96*Q);
-
-        // 模式：柳絮更浪漫
-        const r = Math.random();
-        this.mode = (r < 0.55) ? "willow" : (r < 0.86 ? "chrys" : "ring");
-      }
-
-      update(dt){
-        this.t += dt;
-
-        // 风摆 + 轻微抖动
-        this.vx += Math.sin(this.t*0.16)*0.010*dt;
-        this.vy += this.ay*dt;
-
-        this.x  += this.vx*dt;
-        this.y  += this.vy*dt;
-
-        this.trail.push({x:this.x+rand(-0.18,0.18), y:this.y+rand(-0.18,0.18)});
-        if(this.trail.length>this.trailMax) this.trail.shift();
-
-        if(this.y <= this.ty || this.t > 620){
-          explode(this.x,this.y,this.h,this.mode);
-          return false;
-        }
-        return true;
-      }
-
-      draw(){
-        drawSmoothTrail(this.trail, this.h, 1.0, 2.25);
-        ctx.globalCompositeOperation="lighter";
-        ctx.fillStyle = hsla(this.h,95,78,0.95);
-        ctx.beginPath(); ctx.arc(this.x,this.y,2.2,0,Math.PI*2); ctx.fill();
-      }
-    }
-
-    function typeDrag(type){
-      if(type==="willow") return 0.993;
-      if(type==="ring")   return 0.989;
-      return 0.988;
-    }
-
-    class Spark{
-      constructor(x,y,hue,spd,ang,size,decay,grav,type="normal"){
-        this.x=x; this.y=y;
-        this.vx=Math.cos(ang)*spd;
-        this.vy=Math.sin(ang)*spd;
-        this.ay=grav;
-        this.h=(hue+rand(-10,10)+360)%360;
-        this.a=1;
-        this.decay=decay;
-        this.size=size;
-        this.type=type;
-
-        this.trail=[];
-        this.trailMax = Math.floor((type==="willow"? 96: 62)*Q);
-        this.twinkle = Math.random() < (type==="willow" ? 0.18 : 0.30);
-      }
-
-      update(dt){
-        this.vy += this.ay*dt;
-        this.x  += this.vx*dt;
-        this.y  += this.vy*dt;
-
-        const drag = Math.pow(typeDrag(this.type), dt);
-        this.vx *= drag; this.vy *= drag;
-
-        this.trail.push({x:this.x+rand(-0.12,0.12), y:this.y+rand(-0.12,0.12)});
-        if(this.trail.length>this.trailMax) this.trail.shift();
-
-        if(this.twinkle && Math.random()<0.10) this.a *= rand(0.90,0.995);
-        this.a -= this.decay*dt;
-        return this.a>0.02;
-      }
-
-      draw(){
-        const w = this.size * (this.type==="willow" ? 1.25 : 1.08);
-        drawSmoothTrail(this.trail, this.h, this.a, w);
-
-        ctx.globalCompositeOperation="lighter";
-        let a2=this.a;
-        if(this.twinkle) a2 *= (0.76+0.24*Math.sin(performance.now()*0.018 + this.x*0.02));
-        ctx.fillStyle=hsla(this.h,98,74,a2);
-        ctx.beginPath(); ctx.arc(this.x,this.y,this.size,0,Math.PI*2); ctx.fill();
-      }
-    }
-
-    class Ember{
-      constructor(x,y,h){
-        this.x=x; this.y=y;
-        this.vx=rand(-0.24,0.24);
-        this.vy=rand(0.06,0.40);
-        this.ay=rand(0.002,0.0042);
-        this.h=(h+rand(-8,8)+360)%360;
-        this.a=rand(0.32,0.62);
-        this.decay=rand(0.0010,0.0027);
-        this.r=rand(0.7,1.5);
-        this.phase=rand(0,Math.PI*2);
-      }
-      update(dt){
-        this.phase += 0.06*dt;
-        this.vx += Math.sin(this.phase)*0.010*dt;
-        this.vy += this.ay*dt;
-        this.x  += this.vx*dt;
-        this.y  += this.vy*dt;
-        this.vx *= Math.pow(0.996, dt);
-        this.vy *= Math.pow(0.996, dt);
-        this.a  -= this.decay*dt;
-        return this.a>0.02 && this.y < H+90;
-      }
-      draw(){
-        ctx.globalCompositeOperation="lighter";
-        ctx.fillStyle=hsla(this.h,70,66,this.a);
-        ctx.beginPath(); ctx.arc(this.x,this.y,this.r,0,Math.PI*2); ctx.fill();
-      }
-    }
-
-    function explode(x,y,hue,mode){
-      bloom(x,y,hue);
-      const grav = rand(0.030,0.046);
-      const pop = Math.random();
-
-      if(mode==="chrys"){
-        const n = Math.floor(rand(125,190)*Q);
-        for(let i=0;i<n;i++){
-          const a = rand(0,Math.PI*2);
-          const sp = rand(1.1,3.4);
-          sparks.push(new Spark(x,y,hue,sp,a,rand(0.9,1.9),rand(0.006,0.011),grav,"normal"));
-        }
-        const core = (hue + rand(15,35))%360;
-        const n2 = Math.floor(rand(50,85)*Q);
-        for(let i=0;i<n2;i++){
-          const a = rand(0,Math.PI*2);
-          const sp = rand(0.5,1.8);
-          sparks.push(new Spark(x,y,core,sp,a,rand(0.8,1.4),rand(0.010,0.016),grav*0.95,"normal"));
-        }
-        for(let i=0;i<Math.floor(rand(55,95)*Q);i++) embers.push(new Ember(x+rand(-26,26),y+rand(-26,26),core));
-
-        if(pop < 0.52){
-          setTimeout(()=>{
-            const h2=(hue+rand(70,150))%360;
-            bloom(x,y,h2);
-            const n3=Math.floor(rand(35,65)*Q);
-            for(let i=0;i<n3;i++){
-              const a=rand(0,Math.PI*2);
-              const sp=rand(0.6,1.8);
-              sparks.push(new Spark(x,y,h2,sp,a,rand(0.8,1.3),rand(0.012,0.018),grav*0.92,"normal"));
-            }
-          }, rand(620,980));
-        }
-      }
-
-      if(mode==="ring"){
-        const n = Math.floor(rand(130,180)*Q);
-        const ringSp=rand(1.85,3.2);
-        for(let i=0;i<n;i++){
-          const a=(i/n)*Math.PI*2 + rand(-0.018,0.018);
-          sparks.push(new Spark(x,y,hue,ringSp*rand(0.92,1.08),a,rand(0.9,1.7),rand(0.007,0.012),grav*0.92,"ring"));
-        }
-        const core=(hue+rand(25,55))%360;
-        for(let i=0;i<Math.floor(rand(22,45)*Q);i++){
+    // 二次闪（更逼真）
+    if(pop<0.65){
+      setTimeout(()=>{
+        const h2=(hue+rand(70,150))%360;
+        bloom(x,y,h2);
+        const n3=Math.floor(rand(55,95)*Q);
+        for(let i=0;i<n3;i++){
           const a=rand(0,Math.PI*2);
-          const sp=rand(0.4,1.4);
-          sparks.push(new Spark(x,y,core,sp,a,rand(0.8,1.2),rand(0.013,0.019),grav*0.95,"normal"));
+          const sp=rand(0.6,2.0);
+          sparks.push(new Spark(x,y,h2,sp,a,rand(0.8,1.4),rand(0.012,0.018),grav*0.92,"normal"));
         }
-        for(let i=0;i<Math.floor(rand(35,70)*Q);i++) embers.push(new Ember(x+rand(-30,30),y+rand(-30,30),core));
-      }
+      }, rand(520,880));
+    }
+  }
 
-      if(mode==="willow"){
-        const gold = rand(42,58);
-        const n = Math.floor(rand(175,255)*Q);
-        for(let i=0;i<n;i++){
-          const a=rand(0,Math.PI*2);
-          const sp=rand(0.85,2.75);
-          sparks.push(new Spark(x,y,gold,sp,a,rand(0.95,2.0),rand(0.0038,0.0064),grav*1.22,"willow"));
-        }
-        for(let i=0;i<Math.floor(rand(95,160)*Q);i++){
-          embers.push(new Ember(x+rand(-32,32),y+rand(-32,32),gold));
-        }
+  if(mode==="ring"){
+    const n=Math.floor(rand(170,240)*Q);
+    const ringSp=rand(2.0,3.5);
+    for(let i=0;i<n;i++){
+      const a=(i/n)*Math.PI*2 + rand(-0.018,0.018);
+      sparks.push(new Spark(x,y,hue,ringSp*rand(0.92,1.08),a,rand(0.9,1.8),rand(0.007,0.012),grav*0.92,"ring"));
+    }
+    const core=(hue+rand(25,60))%360;
+    for(let i=0;i<Math.floor(rand(35,70)*Q);i++){
+      const a=rand(0,Math.PI*2);
+      const sp=rand(0.5,1.6);
+      sparks.push(new Spark(x,y,core,sp,a,rand(0.8,1.3),rand(0.013,0.019),grav*0.95,"normal"));
+    }
+    for(let i=0;i<Math.floor(rand(55,95)*Q);i++){
+      embers.push(new Ember(x+rand(-34,34),y+rand(-34,34),core));
+    }
+  }
+
+  if(mode==="willow"){
+    // 柳絮金雨：最浪漫、拖尾长、下垂明显
+    const gold=rand(42,58);
+    const n=Math.floor(rand(210,320)*Q);
+    for(let i=0;i<n;i++){
+      const a=rand(0,Math.PI*2);
+      const sp=rand(0.95,3.05);
+      sparks.push(new Spark(x,y,gold,sp,a,rand(0.95,2.1),rand(0.0036,0.0060),grav*1.25,"willow"));
+    }
+    for(let i=0;i<Math.floor(rand(120,200)*Q);i++){
+      embers.push(new Ember(x+rand(-36,36),y+rand(-36,36),gold));
+    }
+    // 再叠一层淡粉闪光，氛围更浪漫
+    setTimeout(()=>{
+      const h2=romanticHue();
+      bloom(x,y,h2);
+      const n2=Math.floor(rand(35,65)*Q);
+      for(let i=0;i<n2;i++){
+        const a=rand(0,Math.PI*2);
+        const sp=rand(0.5,1.6);
+        sparks.push(new Spark(x,y,h2,sp,a,rand(0.8,1.3),rand(0.012,0.018),grav*0.92,"normal"));
+      }
+    }, rand(520,820));
+  }
+}
+
+// ========= 自动发射：更高频、更“庆祝” =========
+let last=performance.now();
+let acc=0;
+
+function frame(t){
+  const rawDt=(t-last)/(1000/60);
+  last=t;
+  const dt=clamp(rawDt,0.6,1.7)*SLOW;
+
+  fadeBg();
+
+  acc+=dt;
+  const density=clamp((W*H)/(1280*720),0.85,1.55);
+
+  // ✅ 发射频率：明显更高（越小越频繁）
+  const launchEvery = 150 / density;  // 之前 260 太慢
+
+  if(acc>launchEvery){
+    acc=0;
+
+    // 一次发 1~2 发，让场面更“绽放”
+    const shots = (Math.random()<0.45) ? 2 : 1;
+    for(let s=0;s<shots;s++){
+      if(rockets.length < (lowEnd ? 3 : 5)){
+        rockets.push(new Rocket());
       }
     }
+  }
 
-    // ============ 自动发射（无手动） ============
-    let last = performance.now();
-    let acc = 0;
+  for(let i=rockets.length-1;i>=0;i--){
+    const ok=rockets[i].update(dt);
+    rockets[i].draw();
+    if(!ok) rockets.splice(i,1);
+  }
+  for(let i=sparks.length-1;i>=0;i--){
+    const ok=sparks[i].update(dt);
+    sparks[i].draw();
+    if(!ok) sparks.splice(i,1);
+  }
+  for(let i=embers.length-1;i>=0;i--){
+    const ok=embers[i].update(dt);
+    embers[i].draw();
+    if(!ok) embers.splice(i,1);
+  }
 
-    function frame(t){
-      const rawDt = (t-last)/(1000/60);
-      last=t;
-      const dt = clamp(rawDt,0.6,1.6) * SLOW;
+  requestAnimationFrame(frame);
+}
 
-      fadeBg();
+ctx.fillStyle="#000";ctx.fillRect(0,0,W,H);
+requestAnimationFrame(frame);
 
-      acc += dt;
-      const density = clamp((W*H)/(1280*720),0.85,1.55);
-      const launchEvery = 260 / density; // 慢一点更真实
-
-      if(acc > launchEvery){
-        acc = 0;
-        if(rockets.length < (lowEnd ? 2 : 3)){
-          rockets.push(new Rocket());
-          // 偶尔双响（但不需要手动）
-          if(Math.random() < 0.14){
-            setTimeout(()=>rockets.push(new Rocket()), rand(700,1200));
-          }
-        }
-      }
-
-      for(let i=rockets.length-1;i>=0;i--){
-        const ok=rockets[i].update(dt);
-        rockets[i].draw();
-        if(!ok) rockets.splice(i,1);
-      }
-      for(let i=sparks.length-1;i>=0;i--){
-        const ok=sparks[i].update(dt);
-        sparks[i].draw();
-        if(!ok) sparks.splice(i,1);
-      }
-      for(let i=embers.length-1;i>=0;i--){
-        const ok=embers[i].update(dt);
-        embers[i].draw();
-        if(!ok) embers.splice(i,1);
-      }
-
-      requestAnimationFrame(frame);
-    }
-
-    ctx.fillStyle="#000";
-    ctx.fillRect(0,0,W,H);
-    requestAnimationFrame(frame);
-
-    // 文案入场
-    const card=document.getElementById("card");
-    const l1=document.getElementById("l1");
-    const l2=document.getElementById("l2");
-    const l3=document.getElementById("l3");
-
-    setTimeout(()=>card.classList.add("show"),260);
-    setTimeout(()=>{l1.style.opacity=1;l1.style.transform="translateY(0)";},660);
-    setTimeout(()=>{l2.style.opacity=1;l2.style.transform="translateY(0)";},940);
-    setTimeout(()=>{l3.style.opacity=1;l3.style.transform="translateY(0)";},1240);
-  </script>
+// 文案入场
+const card=document.getElementById("card");
+const l1=document.getElementById("l1");
+const l2=document.getElementById("l2");
+const l3=document.getElementById("l3");
+setTimeout(()=>card.classList.add("show"),240);
+setTimeout(()=>{l1.style.opacity=1;l1.style.transform="translateY(0)";},620);
+setTimeout(()=>{l2.style.opacity=1;l2.style.transform="translateY(0)";},900);
+setTimeout(()=>{l3.style.opacity=1;l3.style.transform="translateY(0)";},1200);
+</script>
 </body>
 </html>
