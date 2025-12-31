@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+  <!-- 在线花体（iPhone 必定生效） -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Zhi+Mang+Xing&display=swap" rel="stylesheet">
+
+  <title>Happy New Year — To 小瑶</title>
+
+  <style>
+    :root{
+      --safe-top: env(safe-area-inset-top);
+      --safe-bottom: env(safe-area-inset-bottom);
+      --safe-left: env(safe-area-inset-left);
+      --safe-right: env(safe-area-inset-right);
+    }
+
+    html,body{
+      margin:0;
+      height:100%;
+      overflow:hidden;
+      background:#000;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
+      touch-action: manipulation;
+      font-family: system-ui,-apple-system,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif;
+    }
+
+    canvas#fx{
+      position:fixed;
+      inset:0;
+      width:100vw;
+      height:100vh;
+      display:block;
+      background:
+        radial-gradient(1400px 900px at 50% 72%, rgba(44,30,86,.42), rgba(0,0,0,1) 62%),
+        radial-gradient(900px 600px at 18% 28%, rgba(255,80,180,.12), transparent 60%),
+        radial-gradient(900px 600px at 82% 32%, rgba(120,220,255,.11), transparent 60%),
+        radial-gradient(900px 600px at 50% 95%, rgba(255,210,90,.10), transparent 60%);
+    }
+
+    .vignette{
+      pointer-events:none;
+      position:fixed;
+      inset:0;
+      mix-blend-mode:screen;
+      background:
+        radial-gradient(1200px 900px at 50% 55%, rgba(255,255,255,.06), rgba(0,0,0,.82) 74%),
+        radial-gradient(900px 600px at 15% 32%, rgba(255,60,180,.11), transparent 62%),
+        radial-gradient(900px 600px at 85% 35%, rgba(60,220,255,.11), transparent 62%),
+        radial-gradient(900px 600px at 50% 92%, rgba(255,210,90,.08), transparent 60%);
+    }
+
+    .halo{
+      pointer-events:none;
+      position:fixed;
+      inset:0;
+      z-index:8;
+      mix-blend-mode:screen;
+      opacity:.85;
+      background: radial-gradient(
+        900px 680px at 50% 55%,
+        rgba(255,120,220,.10),
+        rgba(120,220,255,.07) 40%,
+        rgba(0,0,0,0) 76%
+      );
+      animation: haloBreath 6.4s ease-in-out infinite;
+    }
+
+    @keyframes haloBreath{
+      0%,100%{opacity:.65;}
+      50%{opacity:1;}
+    }
+
+    .overlay{
+      position:fixed;
+      inset:0;
+      z-index:20;
+      padding:
+        calc(6vh + var(--safe-top))
+        calc(6vw + var(--safe-right))
+        calc(6vh + var(--safe-bottom))
+        calc(6vw + var(--safe-left));
+      display:grid;
+      place-items:center;
+      pointer-events:none;
+      text-align:center;
+    }
+
+    /* ✅ 更通透的卡片 */
+    .card{
+      max-width:min(1120px,94vw);
+      width:100%;
+      padding:22px 16px;
+      border-radius:26px;
+
+      background:
+        radial-gradient(900px 420px at 50% 18%, rgba(255,255,255,.08), rgba(0,0,0,0) 62%),
+        rgba(0,0,0,.08);
+
+      backdrop-filter: blur(8px) saturate(155%);
+      -webkit-backdrop-filter: blur(8px) saturate(155%);
+
+      box-shadow:
+        0 18px 60px rgba(0,0,0,.38),
+        0 0 60px rgba(255,120,220,.10),
+        0 0 60px rgba(120,220,255,.09),
+        inset 0 0 0 1px rgba(255,255,255,.16);
+
+      opacity:0;
+      transform: translateY(10px) scale(.994);
+      transition: opacity 900ms ease, transform 900ms ease;
+    }
+    .card.show{
+      opacity:1;
+      transform: translateY(0) scale(1);
+    }
+
+    /* ✅ 更高级的描边 + 阴影（清晰） */
+    .stroke{
+      -webkit-text-stroke: .42px rgba(0,0,0,.30);
+      text-shadow:
+        0 1px 1px rgba(0,0,0,.35),
+        0 4px 18px rgba(0,0,0,.55);
+      paint-order: stroke fill;
+    }
+
+    /* 字体尺寸：整体更小但清楚 */
+    .line1{
+      font-family:"Great Vibes", cursive;
+      font-size:clamp(38px, 7.6vw, 88px);
+      margin:0 0 6px;
+      color:#fff;
+      opacity:0;
+      transform: translateY(10px);
+      transition: 760ms ease;
+    }
+
+    .line2{
+      font-family:"Great Vibes", cursive;
+      font-size:clamp(20px, 4.7vw, 44px);
+      margin:0 0 8px;
+      color:#fff;
+      opacity:0;
+      transform: translateY(10px);
+      transition: 760ms ease;
+    }
+
+    .line3{
+      font-family:"Zhi Mang Xing", cursive;
+      font-size:clamp(18px, 4.0vw, 34px);
+      line-height:1.66;
+      margin:0;
+      color:#fff;
+      opacity:0;
+      transform: translateY(12px);
+      transition: 900ms ease;
+    }
+
+    @media (max-width:480px){
+      .overlay{
+        padding:
+          calc(4.8vh + var(--safe-top))
+          calc(5vw + var(--safe-right))
+          calc(5.4vh + var(--safe-bottom))
+          calc(5vw + var(--safe-left));
+      }
+      .card{ padding:20px 14px; }
+      .line1{ font-size:clamp(34px, 8.2vw, 78px); }
+      .line2{ font-size:clamp(18px, 5.0vw, 38px); }
+      .line3{ font-size:clamp(16px, 4.4vw, 30px); }
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="fx"></canvas>
+  <div class="halo"></div>
+  <div class="vignette"></div>
+
+  <div class="overlay">
+    <div class="card" id="card">
+      <div class="line1 stroke" id="l1">Happy New Year</div>
+      <div class="line2 stroke" id="l2">— To 小瑶</div>
+      <div class="line3 stroke" id="l3">
+        2025年我做过最正确的决定，就是走进你的生活。谢谢你愿意陪我这个幼稚又笨拙的人。<br>
+        我想把往后的每一个岁末年初都留给你，不仅是第一个，还有以后的每一个。
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ===== 慢节奏浪漫烟花 ===== */
+    const canvas=document.getElementById("fx");
+    const ctx=canvas.getContext("2d");
+    let W,H,DPR=Math.min(2,window.devicePixelRatio||1);
+
+    function resize(){
+      W=innerWidth;H=innerHeight;
+      canvas.width=W*DPR;canvas.height=H*DPR;
+      ctx.setTransform(DPR,0,0,DPR,0,0);
+    }
+    addEventListener("resize",resize);resize();
+
+    const fireworks=[],particles=[];
+    const rand=(a,b)=>a+Math.random()*(b-a);
+
+    class Firework{
+      constructor(){
+        this.x=rand(W*0.25,W*0.75);
+        this.y=H+20;
+        this.ty=rand(H*0.25,H*0.55);
+        this.vy=rand(-2.2,-1.6);
+        this.h=rand(0,360);
+        this.trail=[];
+      }
+      update(){
+        this.y+=this.vy;
+        this.trail.push({x:this.x,y:this.y});
+        if(this.trail.length>40)this.trail.shift();
+        if(this.y<=this.ty)this.explode();
+      }
+      draw(){
+        ctx.strokeStyle=`hsla(${this.h},100%,70%,.6)`;
+        ctx.beginPath();
+        this.trail.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));
+        ctx.stroke();
+      }
+      explode(){
+        for(let i=0;i<120;i++){
+          particles.push(new Particle(this.x,this.y,this.h));
+        }
+        this.dead=true;
+      }
+    }
+
+    class Particle{
+      constructor(x,y,h){
+        this.x=x;this.y=y;
+        const a=rand(0,Math.PI*2);
+        const s=rand(.6,2.4);
+        this.vx=Math.cos(a)*s;
+        this.vy=Math.sin(a)*s;
+        this.h=h;
+        this.life=1;
+      }
+      update(){
+        this.x+=this.vx;
+        this.y+=this.vy;
+        this.vy+=.02;
+        this.life-=.015;
+      }
+      draw(){
+        ctx.fillStyle=`hsla(${this.h},100%,70%,${this.life})`;
+        ctx.fillRect(this.x,this.y,2,2);
+      }
+    }
+
+    function loop(){
+      ctx.fillStyle="rgba(0,0,0,.15)";
+      ctx.fillRect(0,0,W,H);
+      if(Math.random()<.03)fireworks.push(new Firework());
+      fireworks.forEach(f=>{f.update();f.draw();});
+      particles.forEach(p=>{p.update();p.draw();});
+      fireworks.splice(0,fireworks.filter(f=>f.dead).length);
+      particles.splice(0,particles.filter(p=>p.life<=0).length);
+      requestAnimationFrame(loop);
+    }
+    loop();
+
+    /* 文字入场 */
+    const card=document.getElementById("card");
+    const l1=document.getElementById("l1");
+    const l2=document.getElementById("l2");
+    const l3=document.getElementById("l3");
+
+    setTimeout(()=>card.classList.add("show"),300);
+    setTimeout(()=>{l1.style.opacity=1;l1.style.transform="translateY(0)";},700);
+    setTimeout(()=>{l2.style.opacity=1;l2.style.transform="translateY(0)";},1000);
+    setTimeout(()=>{l3.style.opacity=1;l3.style.transform="translateY(0)";},1300);
+  </script>
+</body>
+</html>
