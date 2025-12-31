@@ -121,4 +121,536 @@
     .line2{
       font-family:"Great Vibes", cursive;
       font-weight:400;
-      font-size:clamp(22px, 5.1vw,
+      font-size:clamp(22px, 5.1vw, 48px);
+      margin:0 0 10px 0;
+      color:rgba(255,255,255,.97);
+      text-shadow:
+        0 0 6px rgba(255,255,255,.18),
+        0 0 22px rgba(255,210,90,.12);
+      opacity:0; transform: translateY(10px);
+      transition: opacity 760ms ease, transform 760ms ease;
+    }
+
+    .line3{
+      font-family:"Zhi Mang Xing", cursive;
+      font-weight:400;
+      font-size:clamp(20px, 4.2vw, 36px);
+      line-height:1.74;
+      margin:0;
+      color:rgba(255,255,255,.99);
+      text-shadow:
+        0 3px 16px rgba(0,0,0,.62),
+        0 0 10px rgba(255,255,255,.06);
+      opacity:0; transform: translateY(12px);
+      transition: opacity 900ms ease, transform 900ms ease;
+    }
+
+    .hint{
+      position:fixed; left:50%;
+      bottom:calc(14px + var(--safe-bottom));
+      transform:translateX(-50%);
+      z-index:30;
+      font-size:12px;
+      color:rgba(255,255,255,.55);
+      text-shadow:0 2px 10px rgba(0,0,0,.6);
+      opacity:0;
+      transition:opacity 900ms ease;
+      pointer-events:none;
+    }
+    .hint.show{opacity:.75;}
+
+    /* iPhone 小屏更精致：卡片略小、留出烟花 */
+    @media (max-width: 480px){
+      .overlay{
+        padding: calc(4.7vh + var(--safe-top)) calc(5vw + var(--safe-right))
+                 calc(5.2vh + var(--safe-bottom)) calc(5vw + var(--safe-left));
+      }
+      .card{ padding:20px 14px; border-radius:24px; }
+      .line1{ font-size:clamp(38px, 8.8vw, 84px); }
+      .line2{ font-size:clamp(20px, 5.5vw, 42px); margin-bottom:8px; }
+      .line3{ font-size:clamp(18px, 4.6vw, 32px); line-height:1.68; }
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="fx"></canvas>
+  <div class="halo"></div>
+  <div class="vignette"></div>
+
+  <div class="overlay" aria-hidden="true">
+    <div class="card" id="card">
+      <h1 class="line1 stroke" id="l1">Happy New Year</h1>
+      <h2 class="line2 stroke" id="l2">— To 小瑶</h2>
+      <p class="line3 stroke" id="l3">
+        2025年我做过最正确的决定，就是走进你的生活。谢谢你愿意陪我这个幼稚又笨拙的人。<br/>
+        我想把往后的每一个岁末年初都留给你，不仅是第一个，还有以后的每一个。
+      </p>
+    </div>
+  </div>
+
+  <div class="hint" id="hint">轻触屏幕，会为你再放一束爱心烟花</div>
+
+  <script>
+    /* ===============================
+       慢、真实、浪漫烟花（在线版）
+    ================================ */
+    const SLOW_MO = 0.42; // 越小越慢
+    const isLowMem = (navigator.deviceMemory && navigator.deviceMemory <= 3);
+    const isSaveData = (navigator.connection && navigator.connection.saveData);
+    const isLikelyLowEnd = isLowMem || isSaveData;
+    const QUALITY = isLikelyLowEnd ? 0.80 : 1.0;
+
+    const canvas = document.getElementById("fx");
+    const ctx = canvas.getContext("2d", { alpha:false, desynchronized:true });
+
+    let W=0, H=0;
+    let DPR = Math.min(2, window.devicePixelRatio || 1);
+
+    function resize(){
+      W = Math.floor(window.innerWidth);
+      H = Math.floor(window.innerHeight);
+      const eff = Math.max(1, Math.min(2, DPR * QUALITY));
+      canvas.width = Math.floor(W * eff);
+      canvas.height = Math.floor(H * eff);
+      canvas.style.width = W + "px";
+      canvas.style.height = H + "px";
+      ctx.setTransform(eff, 0, 0, eff, 0, 0);
+    }
+    window.addEventListener("resize", resize, { passive:true });
+    resize();
+
+    const rand=(a,b)=>a+Math.random()*(b-a);
+    const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+    const now=()=> (typeof performance!=="undefined" ? performance.now() : Date.now());
+    const hsla=(h,s,l,a)=>`hsla(${h}, ${s}%, ${l}%, ${a})`;
+
+    function pickRomanticHue(){
+      const palettes=[[330,360],[300,330],[40,65],[190,215],[260,290]];
+      const p=palettes[Math.floor(Math.random()*palettes.length)];
+      return (rand(p[0],p[1]))%360;
+    }
+
+    let running = true;
+    document.addEventListener("visibilitychange", () => { running = !document.hidden; });
+
+    function fadeBackground(){
+      ctx.globalCompositeOperation="source-over";
+      ctx.fillStyle="rgba(0,0,0,0.10)";
+      ctx.fillRect(0,0,W,H);
+
+      if(Math.random() < 0.60){
+        const x=rand(0,W), y=rand(0,H*0.70), r=rand(120,300);
+        const g=ctx.createRadialGradient(x,y,0,x,y,r);
+        g.addColorStop(0,"rgba(255,255,255,0.010)");
+        g.addColorStop(0.60,"rgba(255,255,255,0.004)");
+        g.addColorStop(1,"rgba(0,0,0,0)");
+        ctx.fillStyle=g; ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();
+      }
+
+      ctx.globalCompositeOperation="lighter";
+      const starN = Math.floor(4 * QUALITY);
+      for(let i=0;i<starN;i++){
+        ctx.fillStyle=`rgba(255,255,255,${rand(0.006,0.020)})`;
+        ctx.fillRect(rand(0,W), rand(0,H), 1, 1);
+      }
+    }
+
+    const bokeh=[];
+    class Bokeh{
+      constructor(){ this.reset(true); }
+      reset(initial=false){
+        this.x=rand(0,W);
+        this.y=initial?rand(0,H):H+rand(30,150);
+        this.r=rand(24,76);
+        this.vy=rand(-0.18,-0.05);
+        this.vx=rand(-0.05,0.05);
+        this.alpha=rand(0.016,0.060);
+        this.hue=pickRomanticHue();
+      }
+      update(dt){
+        this.x += this.vx * dt;
+        this.y += this.vy * dt;
+        if(this.y<-180||this.x<-180||this.x>W+180) this.reset(false);
+      }
+      draw(){
+        ctx.globalCompositeOperation="screen";
+        const g=ctx.createRadialGradient(this.x,this.y,0,this.x,this.y,this.r);
+        g.addColorStop(0,hsla(this.hue,70,70,this.alpha));
+        g.addColorStop(1,"rgba(0,0,0,0)");
+        ctx.fillStyle=g; ctx.beginPath(); ctx.arc(this.x,this.y,this.r,0,Math.PI*2); ctx.fill();
+      }
+    }
+    for(let i=0;i<Math.floor((isLikelyLowEnd?9:11)*QUALITY);i++) bokeh.push(new Bokeh());
+
+    function drawTrail(points,hue,sat,lit,alpha,baseWidth){
+      if(points.length<2) return;
+      ctx.globalCompositeOperation="lighter";
+      const p0=points[0], p1=points[points.length-1];
+      const grad=ctx.createLinearGradient(p0.x,p0.y,p1.x,p1.y);
+      grad.addColorStop(0,hsla(hue,sat,lit,alpha*0.016));
+      grad.addColorStop(0.55,hsla(hue,sat,lit,alpha*0.10));
+      grad.addColorStop(1,hsla(hue,sat,lit,alpha*0.60));
+      ctx.strokeStyle=grad;
+      ctx.lineCap="round"; ctx.lineJoin="round";
+      ctx.lineWidth=baseWidth;
+
+      ctx.beginPath();
+      ctx.moveTo(points[0].x,points[0].y);
+      for(let i=1;i<points.length-1;i++){
+        const cpx=points[i].x, cpy=points[i].y;
+        const nx=(points[i].x+points[i+1].x)/2;
+        const ny=(points[i].y+points[i+1].y)/2;
+        ctx.quadraticCurveTo(cpx,cpy,nx,ny);
+      }
+      ctx.lineTo(points[points.length-1].x,points[points.length-1].y);
+      ctx.stroke();
+    }
+
+    const rockets=[], particles=[], embers=[];
+
+    class Rocket{
+      constructor(x,y,tx,ty,hue,mode="normal"){
+        this.x=x; this.y=y; this.tx=tx; this.ty=ty;
+        this.vx=(tx-x)*0.008;
+        this.vy=(ty-y)*0.008 - rand(1.05, 1.65);
+        this.ay=0.012;
+        this.life=0;
+        this.hue=hue;
+        this.mode=mode;
+        this.trail=[];
+        this.trailMax=Math.floor(72*QUALITY);
+        this.wobble=rand(0.0010,0.0030);
+      }
+      update(dt){
+        this.life += dt;
+        this.vx += Math.sin(this.life*0.18)*this.wobble*dt;
+        this.vy += this.ay*dt;
+        this.x += this.vx*dt;
+        this.y += this.vy*dt;
+        this.trail.push({x:this.x+rand(-0.16,0.16), y:this.y+rand(-0.16,0.16)});
+        if(this.trail.length>this.trailMax) this.trail.shift();
+        if(this.y<=this.ty || this.life>420){
+          (this.mode==="heart") ? explodeHeart(this.x,this.y,this.hue) : explodeRomantic(this.x,this.y,this.hue);
+          return false;
+        }
+        return true;
+      }
+      draw(){
+        drawTrail(this.trail,this.hue,80,58,1.0,2.05);
+        ctx.globalCompositeOperation="lighter";
+        ctx.fillStyle=hsla(this.hue,92,74,0.98);
+        ctx.beginPath(); ctx.arc(this.x,this.y,2.25,0,Math.PI*2); ctx.fill();
+      }
+    }
+
+    class Particle{
+      constructor(x,y,hue,speed,angle,size,decay,grav,type="normal"){
+        this.x=x; this.y=y;
+        this.vx=Math.cos(angle)*speed;
+        this.vy=Math.sin(angle)*speed;
+        this.ay=grav;
+        this.hue=(hue+rand(-10,10))%360;
+        this.sat=rand(70,92);
+        this.lit=rand(50,68);
+        this.alpha=1;
+        this.decay=decay;
+        this.size=size;
+        this.trail=[];
+        this.trailMax=Math.floor(rand(28,54)*QUALITY);
+        this.twinkle=Math.random()<0.32;
+        this.type=type;
+        if(type==="willow"){
+          this.trailMax=Math.floor(rand(44,72)*QUALITY);
+          this.decay*=0.55;
+          this.ay*=1.15;
+        }
+      }
+      update(dt){
+        this.vy += this.ay*dt;
+        this.x  += this.vx*dt;
+        this.y  += this.vy*dt;
+        const drag=Math.pow(0.987, dt);
+        this.vx*=drag; this.vy*=drag;
+        this.trail.push({x:this.x+rand(-0.12,0.12), y:this.y+rand(-0.12,0.12)});
+        if(this.trail.length>this.trailMax) this.trail.shift();
+        if(this.twinkle && Math.random()<0.10) this.alpha*=rand(0.86,0.995);
+        this.alpha -= this.decay*dt;
+        return this.alpha>0.02;
+      }
+      draw(){
+        drawTrail(this.trail,this.hue,this.sat,this.lit,this.alpha,(this.size*1.05)+0.18);
+        ctx.globalCompositeOperation="lighter";
+        let a2=this.alpha;
+        if(this.twinkle) a2*=(0.72+0.28*Math.sin(now()*0.02+this.x*0.01));
+        ctx.fillStyle=hsla(this.hue,95,72,a2);
+        ctx.beginPath(); ctx.arc(this.x,this.y,this.size,0,Math.PI*2); ctx.fill();
+      }
+    }
+
+    class Ember{
+      constructor(x,y,hue){
+        this.x=x; this.y=y;
+        this.vx=rand(-0.22,0.22);
+        this.vy=rand(0.05,0.32);
+        this.ay=rand(0.0012,0.0030);
+        this.hue=(hue+rand(-8,8))%360;
+        this.alpha=rand(0.32,0.62);
+        this.decay=rand(0.0010,0.0026);
+        this.r=rand(0.65,1.35);
+        this.w=rand(0.003,0.008);
+        this.phase=rand(0,Math.PI*2);
+      }
+      update(dt){
+        this.phase += this.w*60*dt;
+        this.vx += Math.sin(this.phase)*0.010*dt;
+        this.vy += this.ay*dt;
+        this.x  += this.vx*dt;
+        this.y  += this.vy*dt;
+        this.vx *= Math.pow(0.996, dt);
+        this.vy *= Math.pow(0.996, dt);
+        this.alpha -= this.decay*dt;
+        return this.alpha>0.02 && this.y<H+90;
+      }
+      draw(){
+        ctx.globalCompositeOperation="lighter";
+        ctx.fillStyle=hsla(this.hue,70,66,this.alpha);
+        ctx.beginPath(); ctx.arc(this.x,this.y,this.r,0,Math.PI*2); ctx.fill();
+      }
+    }
+
+    function flash(x,y,hueBase){
+      ctx.globalCompositeOperation="lighter";
+      const R=rand(60,120);
+      const g=ctx.createRadialGradient(x,y,0,x,y,R);
+      g.addColorStop(0,hsla(hueBase,90,80,0.34));
+      g.addColorStop(0.40,hsla((hueBase+14)%360,85,70,0.13));
+      g.addColorStop(1,"rgba(0,0,0,0)");
+      ctx.fillStyle=g; ctx.beginPath(); ctx.arc(x,y,R,0,Math.PI*2); ctx.fill();
+    }
+
+    function explodeRomantic(x,y,hueBase){
+      const roll=Math.random();
+      const type=(roll<0.46)?"willow":(roll<0.80)?"chrys":(roll<0.92)?"ring":"crackle";
+      flash(x,y,hueBase);
+      const gravBase=rand(0.010,0.018);
+      const mul=QUALITY;
+
+      if(type==="chrys"){
+        const count=Math.floor(rand(110,160)*mul);
+        for(let i=0;i<count;i++){
+          const a=rand(0,Math.PI*2);
+          const sp=rand(1.1,3.2);
+          particles.push(new Particle(x,y,hueBase,sp,a,rand(0.95,1.9),rand(0.006,0.011),gravBase));
+        }
+        const eh=(hueBase+rand(30,75))%360;
+        for(let i=0;i<Math.floor(rand(45,75)*mul);i++) embers.push(new Ember(x+rand(-22,22),y+rand(-22,22),eh));
+        if(Math.random()<0.42){
+          setTimeout(()=>{
+            const hue2=(hueBase+rand(70,140))%360;
+            const c2=Math.floor(rand(40,70)*mul);
+            for(let i=0;i<c2;i++){
+              const a=rand(0,Math.PI*2);
+              const sp=rand(0.8,2.1);
+              particles.push(new Particle(x,y,hue2,sp,a,rand(0.85,1.55),rand(0.010,0.016),gravBase*0.92));
+            }
+          }, rand(650,980));
+        }
+      }
+
+      if(type==="ring"){
+        const count=Math.floor(rand(95,140)*mul);
+        const ringR=rand(1.5,3.2);
+        const hue2=(hueBase+rand(-18,18))%360;
+        for(let i=0;i<count;i++){
+          const a=(i/count)*Math.PI*2+rand(-0.02,0.02);
+          const sp=ringR*rand(0.92,1.08);
+          particles.push(new Particle(x,y,hue2,sp,a,rand(0.95,1.7),rand(0.007,0.012),gravBase));
+        }
+        const eh=(hue2+rand(40,80))%360;
+        for(let i=0;i<Math.floor(rand(30,50)*mul);i++) embers.push(new Ember(x+rand(-24,24),y+rand(-24,24),eh));
+      }
+
+      if(type==="willow"){
+        const count=Math.floor(rand(120,190)*mul);
+        const hue2=(hueBase+rand(-8,12))%360;
+        for(let i=0;i<count;i++){
+          const a=rand(0,Math.PI*2);
+          const sp=rand(0.9,2.6);
+          particles.push(new Particle(x,y,hue2,sp,a,rand(0.95,1.95),rand(0.0038,0.0068),gravBase*1.10,"willow"));
+        }
+        const eh=(hue2+rand(35,70))%360;
+        for(let i=0;i<Math.floor(rand(60,100)*mul);i++) embers.push(new Ember(x+rand(-30,30),y+rand(-30,30),eh));
+      }
+
+      if(type==="crackle"){
+        const count=Math.floor(rand(85,130)*mul);
+        for(let i=0;i<count;i++){
+          const a=rand(0,Math.PI*2);
+          const sp=rand(1.0,3.0);
+          particles.push(new Particle(x,y,hueBase,sp,a,rand(0.95,1.9),rand(0.007,0.013),gravBase));
+        }
+        const pops=Math.floor(rand(8,14)*mul);
+        for(let k=0;k<pops;k++){
+          setTimeout(()=>{
+            const px=x+rand(-70,70);
+            const py=y+rand(-55,55);
+            const hue2=(hueBase+rand(-25,25))%360;
+            const c2=Math.floor(rand(8,16)*mul);
+            for(let i=0;i<c2;i++){
+              const a=rand(0,Math.PI*2);
+              const sp=rand(0.45,1.35);
+              particles.push(new Particle(px,py,hue2,sp,a,rand(0.75,1.35),rand(0.012,0.020),gravBase*0.78));
+            }
+          }, rand(900,1600));
+        }
+        const eh=(hueBase+rand(35,75))%360;
+        for(let i=0;i<Math.floor(rand(26,46)*mul);i++) embers.push(new Ember(x+rand(-25,25),y+rand(-25,25),eh));
+      }
+    }
+
+    function explodeHeart(x,y,hueBase){
+      flash(x,y,hueBase);
+      const grav=rand(0.009,0.015);
+      const scale=rand(0.85,1.08);
+      const outlinePts=Math.floor(170*QUALITY);
+      const baseSpeed=rand(1.0,1.9);
+
+      for(let i=0;i<outlinePts;i++){
+        const t=(i/outlinePts)*Math.PI*2;
+        const sx=16*Math.pow(Math.sin(t),3);
+        const sy=13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t);
+        const dx=sx, dy=-sy;
+        const mag=Math.hypot(dx,dy)||1;
+        const angle=Math.atan2(dy/mag, dx/mag);
+        const sp=baseSpeed*scale*(0.85+0.25*Math.random());
+        const h=(hueBase+rand(-8,8))%360;
+        particles.push(new Particle(x,y,h,sp,angle,rand(0.95,1.7),rand(0.006,0.011),grav));
+      }
+
+      const fillCount=Math.floor(90*QUALITY);
+      for(let i=0;i<fillCount;i++){
+        const t=rand(0,Math.PI*2);
+        const r=Math.pow(Math.random(),0.65);
+        const sx=16*Math.pow(Math.sin(t),3)*r;
+        const sy=(13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t))*r;
+        const dx=sx, dy=-sy;
+        const mag=Math.hypot(dx,dy)||1;
+        const angle=Math.atan2(dy/mag, dx/mag);
+        const sp=rand(0.7,1.6)*scale;
+        particles.push(new Particle(x,y,(hueBase+rand(-12,12))%360,sp,angle,rand(0.85,1.45),rand(0.009,0.014),grav*1.02));
+      }
+
+      const eh=(hueBase+rand(35,75))%360;
+      for(let i=0;i<Math.floor(rand(70,110)*QUALITY);i++) embers.push(new Ember(x+rand(-30,30),y+rand(-30,30),eh));
+
+      if(Math.random()<0.62){
+        setTimeout(()=>{
+          const h2=(hueBase+rand(20,60))%360;
+          flash(x,y,h2);
+          const popCount=Math.floor(44*QUALITY);
+          for(let i=0;i<popCount;i++){
+            const a=rand(0,Math.PI*2);
+            const sp=rand(0.45,1.2);
+            particles.push(new Particle(x,y,h2,sp,a,rand(0.75,1.25),rand(0.012,0.020),grav*0.88));
+          }
+        }, rand(900,1300));
+      }
+    }
+
+    function launch(x,y,ty,mode="normal"){
+      const hue=pickRomanticHue();
+      const tx=x+rand(-110,110);
+      rockets.push(new Rocket(x,y,tx,ty,hue,mode));
+    }
+
+    let tick=0;
+    let lastT = performance.now();
+
+    function frame(t){
+      if(!running){
+        lastT=t;
+        requestAnimationFrame(frame);
+        return;
+      }
+
+      const rawDt = (t-lastT)/(1000/60);
+      lastT=t;
+      const dt = clamp(rawDt,0.55,1.7)*SLOW_MO;
+
+      fadeBackground();
+      for(const b of bokeh){ b.update(dt); b.draw(); }
+
+      tick += dt;
+
+      // ✅ 发射节奏慢一点
+      const density = clamp((W*H)/(1280*720),0.85,1.55);
+      const interval = Math.floor(200/density);
+
+      if(tick % interval < dt && rockets.length < Math.floor(3*QUALITY)+1){
+        const x=rand(W*0.22,W*0.78);
+        const ty=rand(H*0.18,H*0.54);
+        const mode=(Math.random()<0.28)?"heart":"normal";
+        launch(x, H+16, ty, mode);
+
+        if(Math.random()<0.06){
+          setTimeout(()=>{
+            launch(rand(W*0.22,W*0.78), H+16, rand(H*0.20,H*0.58), (Math.random()<0.22)?"heart":"normal");
+          }, rand(1200,2000));
+        }
+      }
+
+      for(let i=rockets.length-1;i>=0;i--){
+        const ok=rockets[i].update(dt);
+        rockets[i].draw();
+        if(!ok) rockets.splice(i,1);
+      }
+      for(let i=particles.length-1;i>=0;i--){
+        const ok=particles[i].update(dt);
+        particles[i].draw();
+        if(!ok) particles.splice(i,1);
+      }
+      for(let i=embers.length-1;i>=0;i--){
+        const ok=embers[i].update(dt);
+        embers[i].draw();
+        if(!ok) embers.splice(i,1);
+      }
+
+      requestAnimationFrame(frame);
+    }
+
+    ctx.fillStyle="#000"; ctx.fillRect(0,0,W,H);
+    requestAnimationFrame(frame);
+
+    // 文字入场
+    const card=document.getElementById("card");
+    const l1=document.getElementById("l1");
+    const l2=document.getElementById("l2");
+    const l3=document.getElementById("l3");
+    const hint=document.getElementById("hint");
+
+    setTimeout(()=>card.classList.add("show"),240);
+    setTimeout(()=>{l1.style.opacity=1;l1.style.transform="translateY(0)";},520);
+    setTimeout(()=>{l2.style.opacity=1;l2.style.transform="translateY(0)";},760);
+    setTimeout(()=>{l3.style.opacity=1;l3.style.transform="translateY(0)";},1040);
+    setTimeout(()=>hint.classList.add("show"),2200);
+
+    // 开场浪漫礼花（慢慢铺开）
+    setTimeout(()=>launch(W*0.50,H+16,H*0.34,"heart"),1700);
+    setTimeout(()=>launch(W*0.34,H+16,H*0.42,"normal"),2600);
+    setTimeout(()=>launch(W*0.66,H+16,H*0.44,"normal"),3500);
+
+    // 轻触：再放一束爱心烟花（防连点）
+    let lastTap=0;
+    window.addEventListener("pointerdown",(e)=>{
+      const t=now();
+      if(t-lastTap<700) return;
+      lastTap=t;
+      const x=e.clientX;
+      const y=e.clientY;
+      const ty=clamp(y,H*0.12,H*0.62);
+      rockets.push(new Rocket(x+rand(-60,60), H+16, x, ty, pickRomanticHue(), "heart"));
+    }, { passive:true });
+  </script>
+</body>
+</html>
